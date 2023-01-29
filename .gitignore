@@ -1,0 +1,6 @@
+CMakeLists.txt
+tests/CMakeLists.txt
+cmake-build-debug
+src/TJRayTracer/CMakeLists.txt
+.idea
+
