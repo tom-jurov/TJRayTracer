@@ -4,6 +4,7 @@
 #include <iostream>
 #include "TJRayTracer/Vec4.h"
 #include "TJRayTracer/Vector.h"
+#include "TJRayTracer/Point.h"
 #include <vector>
 
 struct Environment{
@@ -16,17 +17,21 @@ struct Projectile{
     TJRayTracer::Vector velocity;
 };
 
-Projectile tick(Environment &env, Projectile &proj)
+void tick(Environment &env, Projectile &proj)
 {
-    TJRayTracer::Point position = proj.position + proj.velocity;
-    TJRayTracer::Vector velocity = proj.velocity + env.gravity + env.wind;
-    return Projectile{position,velocity};
+    proj.position = proj.position + proj.velocity;
+    proj.velocity = proj.velocity + env.gravity + env.wind;
 }
 
 int main()
 {
     Projectile p{TJRayTracer::Point(0,1,0), TJRayTracer::Vector(1,1,0).normalize()};
     Environment e{TJRayTracer::Vector(0, -0.1, 0), TJRayTracer::Vector(-0.01,0,0)};
+    for(int i =0; i< 143; ++i) {
+        tick(e, p);
+        std::cout << p.position.x << " " << p.position.y << " " << p.position.z << std::endl;
+        std::cout << p.velocity.x << " " << p.velocity.y << " " << p.velocity.z << std::endl;
+    }
     std::cin.get();
     return 0;
 }
