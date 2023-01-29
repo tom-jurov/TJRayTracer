@@ -14,7 +14,7 @@ namespace TJRayTracer{
         Vec4();
         Vec4(double x, double y, double z, double w);
         Vec4(const Vec4 &other);
-        ~Vec4();
+        virtual ~Vec4();
         bool IsPoint();
         bool IsVector();
     };
