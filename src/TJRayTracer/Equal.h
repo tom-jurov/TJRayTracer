@@ -7,7 +7,7 @@
 #include <cmath>
 #define EPSILON 0.00001
 
-bool equal(const double &a, const double &b)
+static bool equal(const double &a, const double &b)
 {
     return (std::abs(a - b) < EPSILON);
 }

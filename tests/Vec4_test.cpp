@@ -2,7 +2,7 @@
 #include "../src/TJRayTracer/Vec4.h"
 #include "../src/TJRayTracer/Vector.h"
 #include "../src/TJRayTracer/Point.h"
-
+#include "../src/TJRayTracer/Equal.h"
 
 TEST(TupleTest, PointUsingBaseClass)
 	{
@@ -94,8 +94,42 @@ TEST(TupleTest, MultiplyingTupleByFraction)
 
 TEST(TupleTest, DividingATupleByScalar)
 {
-    TJRayTracer::Vec4 a(1,-2,3,-4);
-    ASSERT_EQ(a/2,TJRayTracer::Vec4(0.5,-1,1.5,-2));
+    TJRayTracer::Vector a(1,-2,3);
+    ASSERT_EQ(a/2,TJRayTracer::Vec4(0.5,-1,1.5,0.0));
+}
+
+TEST(TupleTest, Magnitude)
+{
+    TJRayTracer::Vector v(-1,-2,-3);
+    ASSERT_EQ(equal(TJRayTracer::Vector::magnitude(v),3.74166), true);
+}
+
+TEST(TupleTest, Normalize)
+{
+    TJRayTracer::Vector v(1,2,3);
+    ASSERT_EQ(TJRayTracer::Vector(0.26726, 0.53452, 0.80178), v.normalize());
+}
+
+TEST(TupleTest, MagnitudeAfterNormalization)
+{
+    TJRayTracer::Vector v(1,2,3);
+    TJRayTracer::Vector normed = v.normalize();
+    ASSERT_EQ(equal(TJRayTracer::Vector::magnitude(normed),1.0), true);
+}
+
+TEST(TupleTest, DotProduct)
+{
+    TJRayTracer::Vector v1(1,2,3);
+    TJRayTracer::Vector v2(2,3,4);
+    ASSERT_EQ(equal(TJRayTracer::Vector::dot(v1,v2),20.0), true);
+}
+
+TEST(TupleTest, CrossProduct)
+{
+    TJRayTracer::Vector v1(1,2,3);
+    TJRayTracer::Vector v2(2,3,4);
+    ASSERT_EQ(TJRayTracer::Vector::cross(v1,v2),TJRayTracer::Vector(-1,2,-1));
+    ASSERT_EQ(TJRayTracer::Vector::cross(v2,v1),TJRayTracer::Vector(1,-2,1));
 }
 
 int main(int argc, char **argv)
