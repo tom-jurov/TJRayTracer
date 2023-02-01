@@ -5,6 +5,7 @@
 #include "TJRayTracer/Vec4.h"
 #include "TJRayTracer/Vector.h"
 #include "TJRayTracer/Point.h"
+#include "TJRayTracer/Canvas.h"
 #include <vector>
 
 struct Environment{
@@ -25,13 +26,13 @@ void tick(Environment &env, Projectile &proj)
 
 int main()
 {
-    Projectile p{TJRayTracer::Point(0,1,0), TJRayTracer::Vector(1,1,0).normalize()};
+    Projectile p{TJRayTracer::Point(0,1,0), 11.25*TJRayTracer::Vector(1,1.8,0).normalize()};
     Environment e{TJRayTracer::Vector(0, -0.1, 0), TJRayTracer::Vector(-0.01,0,0)};
-    for(int i =0; i< 143; ++i) {
+    TJRayTracer::Canvas c(900,550);
+    for(int i =0; i< 200; ++i) {
+        c.SetPixelColor(p.position.x,550-p.position.y,TJRayTracer::Color(1,0,0));
         tick(e, p);
-        std::cout << p.position.x << " " << p.position.y << " " << p.position.z << std::endl;
-        std::cout << p.velocity.x << " " << p.velocity.y << " " << p.velocity.z << std::endl;
     }
-    std::cin.get();
+    c.RenderPng("test");
     return 0;
 }
