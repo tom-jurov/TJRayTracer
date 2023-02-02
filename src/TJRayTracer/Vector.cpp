@@ -10,70 +10,75 @@ TJRayTracer::Vector::Vector() : Vec4(0.0, 0.0, 0.0, 0.0){}
 TJRayTracer::Vector::Vector(double x, double y, double z) : Vec4(x, y, z, 0.0) {}
 TJRayTracer::Vector::~Vector() noexcept {}
 
-TJRayTracer::Vector TJRayTracer::Vector::operator-() {
-    if(this != nullptr)
-    {
-        this->x = -this->x;
-        this->y = -this->y;
-        this->z = -this->z;
+namespace TJRayTracer
+{
+    Vector Vector::operator-() {
+        if(this != nullptr)
+        {
+            this->x = -this->x;
+            this->y = -this->y;
+            this->z = -this->z;
+        }
+        return *this;
     }
-    return *this;
+
+    Vector operator+(const Vector &lhs, const Vector &rhs) {
+        Vector result;
+        if(&lhs != nullptr && &rhs!= nullptr)
+        {
+            result.x = lhs.x + rhs.x;
+            result.y = lhs.y + rhs.y;
+            result.z = lhs.z + rhs.z;
+        }
+        return result;
+    }
+
+    Vector operator-(const Vector &lhs, const Vector &rhs) {
+        Vector result;
+        if(&lhs != nullptr && &rhs!= nullptr)
+        {
+            result.x = lhs.x - rhs.x;
+            result.y = lhs.y - rhs.y;
+            result.z = lhs.z - rhs.z;
+        }
+        return result;
+    }
+
+    Vector operator-(const Point &lhs, const Point &rhs) {
+        Vector result;
+        if(&lhs != nullptr && &rhs!= nullptr)
+        {
+            result.x = lhs.x - rhs.x;
+            result.y = lhs.y - rhs.y;
+            result.z = lhs.z - rhs.z;
+        }
+        return result;
+    }
+
+    Vector Vector::operator*(const double &scalar) const{
+        Vector result;
+        if(this != nullptr) {
+            result.x = this->x * scalar;
+            result.y = this->y * scalar;
+            result.z = this->z * scalar;
+        }
+        return result;
+    }
+
+    Vector operator*(const double &scalar, const Vector &rhs) {
+        return (rhs * scalar);
+    }
+
+    Vector Vector::operator/(const double &scalar) const {
+        Vector result;
+        if(this != nullptr) {
+            result = (*this) * (1/scalar);
+        }
+        return result;
+    }
+
 }
 
-TJRayTracer::Vector TJRayTracer::operator+(const TJRayTracer::Vector &lhs, const TJRayTracer::Vector &rhs) {
-    TJRayTracer::Vector result;
-    if(&lhs != nullptr && &rhs!= nullptr)
-    {
-        result.x = lhs.x + rhs.x;
-        result.y = lhs.y + rhs.y;
-        result.z = lhs.z + rhs.z;
-    }
-    return result;
-}
-
-TJRayTracer::Vector TJRayTracer::operator-(const TJRayTracer::Vector &lhs, const TJRayTracer::Vector &rhs) {
-    TJRayTracer::Vector result;
-    if(&lhs != nullptr && &rhs!= nullptr)
-    {
-        result.x = lhs.x - rhs.x;
-        result.y = lhs.y - rhs.y;
-        result.z = lhs.z - rhs.z;
-    }
-    return result;
-}
-
-TJRayTracer::Vector TJRayTracer::operator-(const TJRayTracer::Point &lhs, const TJRayTracer::Point &rhs) {
-    TJRayTracer::Vector result;
-    if(&lhs != nullptr && &rhs!= nullptr)
-    {
-        result.x = lhs.x - rhs.x;
-        result.y = lhs.y - rhs.y;
-        result.z = lhs.z - rhs.z;
-    }
-    return result;
-}
-
-TJRayTracer::Vector TJRayTracer::Vector::operator*(const double &scalar) const{
-    TJRayTracer::Vector result;
-    if(this != nullptr) {
-        result.x = this->x * scalar;
-        result.y = this->y * scalar;
-        result.z = this->z * scalar;
-    }
-    return result;
-}
-
-TJRayTracer::Vector TJRayTracer::operator*(const double &scalar, const TJRayTracer::Vector &rhs) {
-    return (rhs * scalar);
-}
-
-TJRayTracer::Vector TJRayTracer::Vector::operator/(const double &scalar) const {
-    TJRayTracer::Vector result;
-    if(this != nullptr) {
-        result = (*this) * (1/scalar);
-    }
-    return result;
-}
 
 double TJRayTracer::Vector::magnitude(const TJRayTracer::Vector &vector) {
     double result = 0;

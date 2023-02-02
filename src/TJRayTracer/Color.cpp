@@ -11,61 +11,66 @@ TJRayTracer::Color::Color(double red, double green, double blue) : red(red), gre
 TJRayTracer::Color::~Color() noexcept {}
 
 
-TJRayTracer::Color TJRayTracer::operator+(const TJRayTracer::Color &lhs, const TJRayTracer::Color &rhs) {
-    TJRayTracer::Color result;
-    if(&lhs != nullptr && &rhs!= nullptr)
-    {
-        result.red = lhs.red + rhs.red;
-        result.green = lhs.green + rhs.green;
-        result.blue = lhs.blue + rhs.blue;
-    }
-    return result;
-}
-
-TJRayTracer::Color TJRayTracer::operator-(const TJRayTracer::Color &lhs, const TJRayTracer::Color &rhs) {
-    TJRayTracer::Color result;
-    if(&lhs != nullptr && &rhs!= nullptr)
-    {
-        result.red = lhs.red - rhs.red;
-        result.green = lhs.green - rhs.green;
-        result.blue = lhs.blue - rhs.blue;
-    }
-    return result;
-}
-
-bool TJRayTracer::operator== (const TJRayTracer::Color &lhs,const TJRayTracer::Color &rhs)
-{
-    if(&lhs!= nullptr && &rhs!= nullptr){
-        if(equal(lhs.red, rhs.red) &&
-           equal(lhs.green, rhs.green) &&
-           equal(lhs.blue, rhs.blue)){
-            return true;
+namespace TJRayTracer {
+    Color operator+(const Color &lhs, const Color &rhs) {
+        Color result;
+        if (&lhs != nullptr && &rhs != nullptr) {
+            result.red = lhs.red + rhs.red;
+            result.green = lhs.green + rhs.green;
+            result.blue = lhs.blue + rhs.blue;
         }
+        return result;
     }
-    return false;
-}
 
-TJRayTracer::Color TJRayTracer::Color::operator*(const double &scalar) const{
-    TJRayTracer::Color result;
-    if(this != nullptr) {
-        result.red = this->red * scalar;
-        result.green = this->green * scalar;
-        result.blue = this->blue * scalar;
+    Color operator-(const Color &lhs, const Color &rhs) {
+        Color result;
+        if(&lhs != nullptr && &rhs!= nullptr)
+        {
+            result.red = lhs.red - rhs.red;
+            result.green = lhs.green - rhs.green;
+            result.blue = lhs.blue - rhs.blue;
+        }
+        return result;
     }
-    return result;
-}
 
-TJRayTracer::Color TJRayTracer::operator*(const double &scalar, const TJRayTracer::Color &rhs) {
-    return (rhs * scalar);
-}
-
-TJRayTracer::Color TJRayTracer::operator*(const TJRayTracer::Color &lhs, const TJRayTracer::Color &rhs) {
-    TJRayTracer::Color result;
-    if(&lhs != nullptr && &rhs!= nullptr)
+    bool operator== (const Color &lhs,const Color &rhs)
     {
-        result.red = lhs.red * rhs.red;
-        result.green = lhs.green * rhs.green;
-        result.blue = lhs.blue * rhs.blue;
+        if(&lhs!= nullptr && &rhs!= nullptr){
+            if(equal(lhs.red, rhs.red) &&
+               equal(lhs.green, rhs.green) &&
+               equal(lhs.blue, rhs.blue)){
+                return true;
+            }
+        }
+        return false;
     }
-    return result;
+
+    Color Color::operator*(const double &scalar) const{
+        Color result;
+        if(this != nullptr) {
+            result.red = this->red * scalar;
+            result.green = this->green * scalar;
+            result.blue = this->blue * scalar;
+        }
+        return result;
+    }
+
+    Color operator*(const Color &lhs, const Color &rhs) {
+        Color result;
+        if(&lhs != nullptr && &rhs!= nullptr)
+        {
+            result.red = lhs.red * rhs.red;
+            result.green = lhs.green * rhs.green;
+            result.blue = lhs.blue * rhs.blue;
+        }
+        return result;
+    }
+
+    Color operator*(const double &scalar, const Color &rhs) {
+        return (rhs * scalar);
+    }
 }
+
+
+
+

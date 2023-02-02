@@ -6,6 +6,7 @@
 #include "TJRayTracer/Vector.h"
 #include "TJRayTracer/Point.h"
 #include "TJRayTracer/Canvas.h"
+#include "TJRayTracer/MatrixXd.h"
 #include <vector>
 
 struct Environment{
@@ -34,5 +35,6 @@ int main()
         tick(e, p);
     }
     c.RenderPng("test");
+    std::cin.get();
     return 0;
 }
