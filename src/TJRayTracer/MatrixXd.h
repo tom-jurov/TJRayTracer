@@ -15,6 +15,7 @@ namespace TJRayTracer {
         bool operator!=(const MatrixXd<T,ROWS,COLS> &other);
         MatrixXd<T, ROWS, COLS> operator*(const MatrixXd<T,ROWS,COLS> &other) const;
         Point operator*(const Point &other) const;
+        Vector operator*(const Vector &other) const;
         T& operator()(unsigned int row, unsigned int col);
         void identity();
         void transpose();

@@ -5,6 +5,7 @@
 #include "Canvas.h"
 #include <algorithm>
 #include "stb_image_write.h"
+#include <iostream>
 
 TJRayTracer::Canvas::Canvas(int width, int height) : _width(width), _height(height)
 {

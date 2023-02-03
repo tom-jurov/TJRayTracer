@@ -210,6 +210,16 @@ TJRayTracer::MatrixXd<T, ROWS, COLS> TJRayTracer::MatrixXd<T, ROWS, COLS>::inver
     return result;
 }
 
+template<class T, unsigned int ROWS, unsigned int COLS>
+TJRayTracer::Vector TJRayTracer::MatrixXd<T, ROWS, COLS>::operator*(const TJRayTracer::Vector &other) const {
+    Vector result;
+    result.x = _data[0+0*COLS]*other.x + _data[1+0*COLS]*other.y + _data[2+0*COLS]*other.z + _data[3+0*COLS]*other.w;
+    result.y = _data[0+1*COLS]*other.x + _data[1+1*COLS]*other.y + _data[2+1*COLS]*other.z + _data[3+1*COLS]*other.w;
+    result.z = _data[0+2*COLS]*other.x + _data[1+2*COLS]*other.y + _data[2+2*COLS]*other.z + _data[3+2*COLS]*other.w;
+    result.w = _data[0+3*COLS]*other.x + _data[1+3*COLS]*other.y + _data[2+3*COLS]*other.z + _data[3+3*COLS]*other.w;
+    return result;
+}
+
 
 // explicit instantiations
 template class TJRayTracer::MatrixXd<double, 4, 4>;

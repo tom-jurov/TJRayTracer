@@ -7,33 +7,27 @@
 #include "TJRayTracer/Point.h"
 #include "TJRayTracer/Canvas.h"
 #include "TJRayTracer/MatrixXd.h"
+#include "TJRayTracer/TF.h"
 #include <vector>
-
-struct Environment{
-    TJRayTracer::Vector gravity;
-    TJRayTracer::Vector wind;
-};
-
-struct Projectile{
-    TJRayTracer::Point position;
-    TJRayTracer::Vector velocity;
-};
-
-void tick(Environment &env, Projectile &proj)
-{
-    proj.position = proj.position + proj.velocity;
-    proj.velocity = proj.velocity + env.gravity + env.wind;
-}
 
 int main()
 {
-    Projectile p{TJRayTracer::Point(0,1,0), 11.25*TJRayTracer::Vector(1,1.8,0).normalize()};
-    Environment e{TJRayTracer::Vector(0, -0.1, 0), TJRayTracer::Vector(-0.01,0,0)};
-    TJRayTracer::Canvas c(900,550);
-    for(int i =0; i< 200; ++i) {
-        c.SetPixelColor(p.position.x,550-p.position.y,TJRayTracer::Color(1,0,0));
-        tick(e, p);
+    std::vector<TJRayTracer::Point> points;
+    for (std::size_t i=0; i<12; ++i) {
+        points.push_back(TJRayTracer::Point(0, 0, 0));
     }
+    double angle = 0;
+    TJRayTracer::Canvas c(900,550);
+    for(auto& p: points)
+    {
+        auto translation = TJRayTracer::TF::translation(100,0,0);
+        auto rotation_around_y = TJRayTracer::TF::rotation_y(angle);
+        angle += M_PI/6;
+        auto rotation_around_x = TJRayTracer::TF::rotation_x(-M_PI_2);
+        p = (rotation_around_x*rotation_around_y*translation)*p;
+        c.SetPixelColor(450+static_cast<int>(p.x),275-static_cast<int>(p.y),TJRayTracer::Color(1,0,0));
+    }
+
     c.RenderPng("test");
     std::cin.get();
     return 0;
