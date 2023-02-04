@@ -8,27 +8,42 @@
 #include "TJRayTracer/Canvas.h"
 #include "TJRayTracer/MatrixXd.h"
 #include "TJRayTracer/TF.h"
+#include "TJRayTracer/BaseObject.h"
+#include "TJRayTracer/Sphere.h"
 #include <vector>
 
 int main()
 {
-    std::vector<TJRayTracer::Point> points;
-    for (std::size_t i=0; i<12; ++i) {
-        points.push_back(TJRayTracer::Point(0, 0, 0));
-    }
-    double angle = 0;
-    TJRayTracer::Canvas c(900,550);
-    for(auto& p: points)
+    int width = 1000;
+    int height = 1000;
+    int wall_size = 10;
+    double half = wall_size/2;
+    double wall_z = 10;
+    double pixel_size = (double)wall_size/height;
+    TJRayTracer::Canvas canvas(width,height);
+    TJRayTracer::Color red(1,0,0);
+    TJRayTracer::BaseObject *shape = new TJRayTracer::Sphere();
+    shape->SetTransform(TJRayTracer::TF::scaling(1.2,1.2,1.2));
+    TJRayTracer::Point ray_origin(0,0,-5);
+    for (std::size_t y=0; y<height; ++y)
     {
-        auto translation = TJRayTracer::TF::translation(100,0,0);
-        auto rotation_around_y = TJRayTracer::TF::rotation_y(angle);
-        angle += M_PI/6;
-        auto rotation_around_x = TJRayTracer::TF::rotation_x(-M_PI_2);
-        p = (rotation_around_x*rotation_around_y*translation)*p;
-        c.SetPixelColor(450+static_cast<int>(p.x),275-static_cast<int>(p.y),TJRayTracer::Color(1,0,0));
+        double world_y = half - pixel_size*y;
+        for (std::size_t x=0; x<width; ++x)
+        {
+            double world_x = double(-half + pixel_size*x);
+            auto position = TJRayTracer::Point(world_x, world_y, wall_z);
+
+            auto r = TJRayTracer::Ray(ray_origin,(position-ray_origin).normalize());
+            auto xs = shape->intersect(r);
+            if (shape->hit(xs).object!= nullptr)
+            {
+                canvas.SetPixelColor(x,y,red);
+            }
+        }
     }
 
-    c.RenderPng("test");
+    canvas.RenderPng("test");
+    delete(shape);
     std::cin.get();
     return 0;
 }

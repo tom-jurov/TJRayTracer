@@ -18,6 +18,7 @@ namespace TJRayTracer {
     public:
         friend Point operator+(const Point &lhs, const Vector &rhs);
         friend Point operator-(const Point &lhs, const Vector &rhs);
+        friend Vector operator-(const Point &lhs, const Point &rhs);
     };
 }
 

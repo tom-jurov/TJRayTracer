@@ -10,6 +10,7 @@ namespace TJRayTracer {
     class TF {
     public:
         TF();
+        static MatrixXd<double,4,4> identity();
         static MatrixXd<double,4,4> translation(double x, double y, double z);
         static MatrixXd<double,4,4> scaling(double x, double y, double z);
         static MatrixXd<double,4,4> rotation_x(double angle);

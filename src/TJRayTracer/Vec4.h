@@ -20,12 +20,6 @@ namespace TJRayTracer{
 
     public:
         friend bool operator==(const Vec4 &lhs,const Vec4 &rhs);
-        friend Vec4 operator+(const Vec4 &lhs, const Vec4 &rhs);
-        friend Vec4 operator-(const Vec4 &lhs, const Vec4 &rhs);
-        friend Vec4 operator*(const double& scalar, const Vec4 &rhs);
-        Vec4 operator*(const double& scalar) const;
-        Vec4 operator/(const double& scalar) const;
-        Vec4 operator-();
     };
 }
 

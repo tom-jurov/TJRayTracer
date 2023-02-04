@@ -76,3 +76,9 @@ TJRayTracer::TF::shearing(double x_y, double x_z, double y_x, double y_z, double
     result(2,1) = z_y;
     return result;
 }
+
+TJRayTracer::MatrixXd<double, 4, 4> TJRayTracer::TF::identity() {
+    TJRayTracer::MatrixXd<double, 4, 4> result;
+    result.identity();
+    return result;
+}

@@ -22,7 +22,6 @@ namespace TJRayTracer{
     public:
         friend Vector operator+(const Vector &lhs, const Vector &rhs);
         friend Vector operator-(const Vector &lhs, const Vector &rhs);
-        friend Vector operator-(const Point &lhs, const Point &rhs);
         friend Vector operator*(const double& scalar, const Vector &rhs);
         Vector operator*(const double& scalar) const;
         Vector operator/(const double& scalar) const;

@@ -44,17 +44,6 @@ namespace TJRayTracer
         return result;
     }
 
-    Vector operator-(const Point &lhs, const Point &rhs) {
-        Vector result;
-        if(&lhs != nullptr && &rhs!= nullptr)
-        {
-            result.x = lhs.x - rhs.x;
-            result.y = lhs.y - rhs.y;
-            result.z = lhs.z - rhs.z;
-        }
-        return result;
-    }
-
     Vector Vector::operator*(const double &scalar) const{
         Vector result;
         if(this != nullptr) {
