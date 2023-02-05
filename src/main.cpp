@@ -44,6 +44,5 @@ int main()
 
     canvas.RenderPng("test");
     delete(shape);
-    std::cin.get();
     return 0;
 }

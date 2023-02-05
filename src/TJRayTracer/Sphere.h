@@ -16,6 +16,7 @@ namespace TJRayTracer{
         ~Sphere();
         bool intersections(const Ray& ray);
         [[nodiscard]] std::vector<Intersection> intersect(const Ray& ray);
+        [[nodiscard]] Vector normal_at(const Point& p);
     };
 }
 

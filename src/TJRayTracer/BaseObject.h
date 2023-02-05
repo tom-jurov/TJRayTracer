@@ -9,6 +9,7 @@
 #include "Ray.h"
 #include "TF.h"
 #include "MatrixXd.h"
+#include "Material.h"
 namespace TJRayTracer {
     class Intersection;
     class BaseObject {
@@ -20,8 +21,11 @@ namespace TJRayTracer {
         TJRayTracer::MatrixXd<double,4,4> GetTransform() const;
         [[nodiscard]] virtual std::vector<Intersection> intersect(const Ray& ray);
         [[nodiscard]] Intersection hit(const std::vector<Intersection> &intersections);
+        [[nodiscard]] virtual Vector normal_at(const TJRayTracer::Point& p);
     private:
         TJRayTracer::MatrixXd<double,4,4> _transform;
+    public:
+        Material material;
     };
 }
 #endif //TJRAYTRACER_BASEOBJECT_H

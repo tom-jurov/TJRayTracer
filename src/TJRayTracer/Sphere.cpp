@@ -30,3 +30,13 @@ std::vector<TJRayTracer::Intersection> TJRayTracer::Sphere::intersect(const TJRa
     }
     return intersections;
 }
+
+TJRayTracer::Vector TJRayTracer::Sphere::normal_at(const TJRayTracer::Point &p) {
+    Point object_point = (this->GetTransform().inverse())*p;
+    Vector object_normal = object_point - Point(0,0,0);
+    auto world_transform = this->GetTransform().inverse();
+    world_transform.transpose();
+    auto world_normal = world_transform*object_normal;
+    world_normal.w = 0;
+    return world_normal.normalize();
+}

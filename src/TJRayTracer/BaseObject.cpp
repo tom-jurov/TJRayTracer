@@ -31,3 +31,7 @@ void TJRayTracer::BaseObject::SetTransform(const TJRayTracer::MatrixXd<double, 4
 TJRayTracer::MatrixXd<double, 4, 4> TJRayTracer::BaseObject::GetTransform() const{
     return _transform;
 }
+
+TJRayTracer::Vector TJRayTracer::BaseObject::normal_at(const TJRayTracer::Point &p) {
+    return {0,0,0};
+}

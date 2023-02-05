@@ -19,6 +19,7 @@ namespace TJRayTracer{
         static double magnitude(const Vector &vector);
         static double dot(const Vector &lhs, const Vector &rhs);
         static Vector cross(const Vector &lhs, const Vector &rhs);
+        static Vector reflect(const Vector &in, const Vector &normal);
     public:
         friend Vector operator+(const Vector &lhs, const Vector &rhs);
         friend Vector operator-(const Vector &lhs, const Vector &rhs);

@@ -106,3 +106,7 @@ TJRayTracer::Vector TJRayTracer::Vector::normalize() const {
     }
     return (*this);
 }
+
+TJRayTracer::Vector TJRayTracer::Vector::reflect(const TJRayTracer::Vector &in, const TJRayTracer::Vector &normal) {
+    return in - normal * 2 * Vector::dot(in,normal);
+}
