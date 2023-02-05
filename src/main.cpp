@@ -10,6 +10,8 @@
 #include "TJRayTracer/TF.h"
 #include "TJRayTracer/BaseObject.h"
 #include "TJRayTracer/Sphere.h"
+#include "TJRayTracer/Material.h"
+#include "TJRayTracer/PointLight.h"
 #include <vector>
 
 int main()
@@ -21,8 +23,12 @@ int main()
     double wall_z = 10;
     double pixel_size = (double)wall_size/height;
     TJRayTracer::Canvas canvas(width,height);
-    TJRayTracer::Color red(1,0,0);
     TJRayTracer::BaseObject *shape = new TJRayTracer::Sphere();
+    shape->material = TJRayTracer::Material();
+    shape->material.color = TJRayTracer::Color(1,0.2,1);
+    TJRayTracer::Point light_position(-10, 10, -10);
+    TJRayTracer::Color light_color(1,1,1);
+    TJRayTracer::PointLight light(std::move(light_position), std::move(light_color));
     shape->SetTransform(TJRayTracer::TF::scaling(1.2,1.2,1.2));
     TJRayTracer::Point ray_origin(0,0,-5);
     for (std::size_t y=0; y<height; ++y)
@@ -35,9 +41,15 @@ int main()
 
             auto r = TJRayTracer::Ray(ray_origin,(position-ray_origin).normalize());
             auto xs = shape->intersect(r);
-            if (shape->hit(xs).object!= nullptr)
+            auto hit = shape->hit(xs);
+            if (hit.object!= nullptr)
             {
-                canvas.SetPixelColor(x,y,red);
+                auto point = r.position(hit.t);
+                auto normal = shape->normal_at(point);
+                auto direction_of_ray = r.GetDirection();
+                auto eye = -direction_of_ray;
+                auto color = TJRayTracer::PointLight::lighting(hit.object->material, light, point, eye, normal);
+                canvas.SetPixelColor(x,y,color);
             }
         }
     }
