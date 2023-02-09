@@ -82,3 +82,23 @@ TJRayTracer::MatrixXd<double, 4, 4> TJRayTracer::TF::identity() {
     result.identity();
     return result;
 }
+
+TJRayTracer::MatrixXd<double, 4, 4>
+TJRayTracer::TF::view_transform(const TJRayTracer::Point &from, const TJRayTracer::Point &to,
+                                const TJRayTracer::Vector &up) {
+    auto forward = (to-from).normalize();
+    auto upn = up.normalize();
+    auto left = Vector::cross(forward, upn);
+    auto true_up = Vector::cross(left,forward);
+    auto orientation = TF::identity();
+    orientation(0,0) = left.x;
+    orientation(0,1) = left.y;
+    orientation(0,2) = left.z;
+    orientation(1,0) = true_up.x;
+    orientation(1,1) = true_up.y;
+    orientation(1,2) = true_up.z;
+    orientation(2,0) = -forward.x;
+    orientation(2,1) = -forward.y;
+    orientation(2,2) = -forward.z;
+    return orientation*TF::translation(-from.x, -from.y, -from.z);
+}

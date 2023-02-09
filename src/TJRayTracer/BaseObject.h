@@ -22,6 +22,10 @@ namespace TJRayTracer {
         [[nodiscard]] virtual std::vector<Intersection> intersect(const Ray& ray);
         [[nodiscard]] Intersection hit(const std::vector<Intersection> &intersections);
         [[nodiscard]] virtual Vector normal_at(const TJRayTracer::Point& p);
+
+    public:
+        friend bool operator==(const TJRayTracer::BaseObject &lhs, const TJRayTracer::BaseObject &rhs);
+
     private:
         TJRayTracer::MatrixXd<double,4,4> _transform;
     public:

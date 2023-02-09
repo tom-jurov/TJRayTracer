@@ -58,3 +58,8 @@ TJRayTracer::Color TJRayTracer::PointLight::lighting(const Material &m, const TJ
     }
     return ambient+diffuse+specular;
 }
+
+bool TJRayTracer::operator==(const TJRayTracer::PointLight &lhs, const TJRayTracer::PointLight &rhs) {
+    return (lhs.GetIntensity() == rhs.GetIntensity()) && (lhs.GetPosition() == rhs.GetPosition());
+}
+

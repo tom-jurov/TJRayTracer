@@ -12,49 +12,58 @@
 #include "TJRayTracer/Sphere.h"
 #include "TJRayTracer/Material.h"
 #include "TJRayTracer/PointLight.h"
+#include "TJRayTracer/World.h"
+#include "TJRayTracer/Camera.h"
 #include <vector>
 
 int main()
 {
-    int width = 1000;
-    int height = 1000;
-    int wall_size = 10;
-    double half = wall_size/2;
-    double wall_z = 10;
-    double pixel_size = (double)wall_size/height;
-    TJRayTracer::Canvas canvas(width,height);
-    TJRayTracer::BaseObject *shape = new TJRayTracer::Sphere();
-    shape->material = TJRayTracer::Material();
-    shape->material.color = TJRayTracer::Color(1,0.2,1);
-    TJRayTracer::Point light_position(-10, 10, -10);
-    TJRayTracer::Color light_color(1,1,1);
-    TJRayTracer::PointLight light(std::move(light_position), std::move(light_color));
-    shape->SetTransform(TJRayTracer::TF::scaling(1.2,1.2,1.2));
-    TJRayTracer::Point ray_origin(0,0,-5);
-    for (std::size_t y=0; y<height; ++y)
-    {
-        double world_y = half - pixel_size*y;
-        for (std::size_t x=0; x<width; ++x)
-        {
-            double world_x = double(-half + pixel_size*x);
-            auto position = TJRayTracer::Point(world_x, world_y, wall_z);
+    std::shared_ptr<TJRayTracer::BaseObject> floor = std::make_shared<TJRayTracer::Sphere>();
+    floor->SetTransform(TJRayTracer::TF::scaling(10,0.01,10));
+    floor->material = TJRayTracer::Material();
+    floor->material.color = TJRayTracer::Color(1, 0.9, 0.9);
+    floor->material.specular = 0;
 
-            auto r = TJRayTracer::Ray(ray_origin,(position-ray_origin).normalize());
-            auto xs = shape->intersect(r);
-            auto hit = shape->hit(xs);
-            if (hit.object!= nullptr)
-            {
-                auto point = r.position(hit.t);
-                auto normal = shape->normal_at(point);
-                auto direction_of_ray = r.GetDirection();
-                auto eye = -direction_of_ray;
-                auto color = TJRayTracer::PointLight::lighting(hit.object->material, light, point, eye, normal);
-                canvas.SetPixelColor(x,y,color);
-            }
-        }
-    }
+    std::shared_ptr<TJRayTracer::BaseObject> left_wall = std::make_shared<TJRayTracer::Sphere>();
+    left_wall->SetTransform(TJRayTracer::TF::translation(0,0,5)*TJRayTracer::TF::rotation_y(-M_PI_4)*TJRayTracer::TF::rotation_x(M_PI_2)*TJRayTracer::TF::scaling(10,0.01,10));
+    left_wall->material = TJRayTracer::Material();
 
+    std::shared_ptr<TJRayTracer::BaseObject> right_wall = std::make_shared<TJRayTracer::Sphere>();
+    right_wall->SetTransform(TJRayTracer::TF::translation(0,0,5)*TJRayTracer::TF::rotation_y(M_PI_4)*TJRayTracer::TF::rotation_x(M_PI_2)*TJRayTracer::TF::scaling(10,0.01,10));
+    right_wall->material = TJRayTracer::Material();
+
+    std::shared_ptr<TJRayTracer::BaseObject> middle = std::make_shared<TJRayTracer::Sphere>();
+    middle->SetTransform(TJRayTracer::TF::translation(-0.5,1,0.5));
+    middle->material = TJRayTracer::Material();
+    middle->material.color = TJRayTracer::Color(0.1,1,0.5);
+    middle->material.diffuse = 0.7;
+    middle->material.specular = 0.3;
+
+    std::shared_ptr<TJRayTracer::BaseObject> right = std::make_shared<TJRayTracer::Sphere>();
+    right->SetTransform(TJRayTracer::TF::translation(1.5,0.5,-0.5)*TJRayTracer::TF::scaling(0.5,0.5,0.5));
+    right->material = TJRayTracer::Material();
+    right->material.color = TJRayTracer::Color(0.5,1,0.1);
+    right->material.diffuse = 0.7;
+    right->material.specular = 0.3;
+
+    std::shared_ptr<TJRayTracer::BaseObject> left = std::make_shared<TJRayTracer::Sphere>();
+    left->SetTransform(TJRayTracer::TF::translation(-1.5,0.33,-0.75)*TJRayTracer::TF::scaling(0.33,0.33,0.33));
+    left->material = TJRayTracer::Material();
+    left->material.color = TJRayTracer::Color(1,0.8,0.1);
+    left->material.diffuse = 0.7;
+    left->material.specular = 0.3;
+
+    TJRayTracer::World world;
+    world.objects.push_back(floor);
+    world.objects.push_back(left_wall);
+    world.objects.push_back(right_wall);
+    world.objects.push_back(middle);
+    world.objects.push_back(right);
+    world.objects.push_back(left);
+    world.light_sources.push_back(TJRayTracer::PointLight(TJRayTracer::Point(-10,10,-10),TJRayTracer::Color(1,1,1)));
+    TJRayTracer::Camera camera(3840,2160, M_PI/3);
+    camera.tf = TJRayTracer::TF::view_transform(TJRayTracer::Point(0,1.5,-5),TJRayTracer::Point(0,1,0), TJRayTracer::Vector(0,1,0));
+    TJRayTracer::Canvas canvas = camera.render(world);
     canvas.RenderPng("test");
-    delete(shape);
     return 0;
 }

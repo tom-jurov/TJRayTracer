@@ -12,6 +12,9 @@
 #include "../src/TJRayTracer/Intersection.h"
 #include "../src/TJRayTracer/PointLight.h"
 #include "../src/TJRayTracer/Material.h"
+#include "../src/TJRayTracer/World.h"
+#include "../src/TJRayTracer/Comps.h"
+#include "../src/TJRayTracer/Camera.h"
 
 TEST(TupleTest, PointUsingBaseClass)
 	{
@@ -1245,6 +1248,253 @@ TEST(SixthChapter, LightingWithTheLightBehindTheSurface)
     PointLight light(Point(0,0,10),Color(1,1,1));
     auto result = PointLight::lighting(m,light,position,eyev,normalv);
     ASSERT_EQ(result, Color(0.1, 0.1, 0.1));
+}
+
+TEST(SeventhChapter, EmptyWorld)
+{
+    TJRayTracer::World w;
+    ASSERT_EQ(w.objects.size(),0);
+    ASSERT_EQ(w.light_sources.size(),0);
+}
+
+TEST(SeventhChapter, DefaultWorld)
+{
+    TJRayTracer::PointLight light(TJRayTracer::Point(-10, 10, -10),TJRayTracer::Color(1,1,1));
+    TJRayTracer::BaseObject *s1 = new TJRayTracer::Sphere();
+    s1->material = TJRayTracer::Material(TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200);
+    TJRayTracer::BaseObject *s2 = new TJRayTracer::Sphere(TJRayTracer::TF::scaling(0.5, 0.5 ,0.5));
+    TJRayTracer::World w;
+    w.default_world();
+    ASSERT_EQ(*w.objects[0].get(),*s1);
+    ASSERT_EQ(*w.objects[1].get(),*s2);
+    ASSERT_EQ(w.light_sources[0],light);
+    delete(s1);
+    delete(s2);
+}
+
+TEST(SeventhChapter, IntersectWorldWithRay)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    auto r = Ray(Point(0,0,-5),Vector(0,0,1));
+    auto xs = w.intersect_world(r);
+    ASSERT_EQ(xs.size(),4);
+    ASSERT_EQ(xs[0].t, 4);
+    ASSERT_EQ(xs[1].t, 4.5);
+    ASSERT_EQ(xs[2].t, 5.5);
+    ASSERT_EQ(xs[3].t, 6);
+}
+
+TEST(SeventhChapter, PrecomputingTheStateOfAnIntersection)
+{
+    using namespace TJRayTracer;
+    auto r = Ray(Point(0,0,-5),Vector(0,0,1));
+    BaseObject *shape = new Sphere();
+    auto i = Intersection(4,shape);
+    auto comps = Comps::prepare_computations(i,r);
+    ASSERT_EQ(comps.t, i.t);
+    ASSERT_EQ(comps.object, i.object);
+    ASSERT_EQ(comps.point, Point(0,0,-1));
+    ASSERT_EQ(comps.eyev, Vector(0,0,-1));
+    ASSERT_EQ(comps.normalv, Vector(0,0,-1));
+}
+
+TEST(SeventhChapter, TheHitWhenAnIntersectionOccursOnTheOutside)
+{
+    using namespace TJRayTracer;
+    auto r = Ray(Point(0,0,-5),Vector(0,0,1));
+    BaseObject *shape = new Sphere();
+    auto i = Intersection(4,shape);
+    auto comps = Comps::prepare_computations(i,r);
+    ASSERT_EQ(comps.inside, false);
+}
+
+TEST(SeventhChapter, TheHitWhenAnIntersectionOccursOnTheInside)
+{
+    using namespace TJRayTracer;
+    auto r = Ray(Point(0,0,0),Vector(0,0,1));
+    BaseObject *shape = new Sphere();
+    auto i = Intersection(1,shape);
+    auto comps = Comps::prepare_computations(i,r);
+    ASSERT_EQ(comps.point, Point(0,0,1));
+    ASSERT_EQ(comps.eyev, Vector(0,0,-1));
+    ASSERT_EQ(comps.inside, true);
+    ASSERT_EQ(comps.normalv, Vector(0,0,-1));
+}
+
+TEST(SeventhChapter, ShadingAnIntersection)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    auto r = Ray(Point(0,0,-5),Vector(0,0,1));
+    std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();
+    s1->material = Material(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200);
+    auto i = Intersection(4,s1.get());
+    auto comps = Comps::prepare_computations(i,r);
+    auto c = w.shade_hit(comps);
+    ASSERT_EQ(c, Color(0.38066,0.47583,0.2855));
+}
+
+TEST(SeventhChapter, ShadingAnIntersectionFromTheInside)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    w.light_sources.clear();
+    w.light_sources.push_back(PointLight(Point(0,0.25,0),Color(1,1,1)));
+    auto r = Ray(Point(0,0,0),Vector(0,0,1));
+    std::unique_ptr<BaseObject> s2 = std::make_unique<TJRayTracer::Sphere>(TF::scaling(0.5, 0.5 ,0.5));
+    auto i = Intersection(0.5,s2.get());
+    auto comps = Comps::prepare_computations(i,r);
+    auto c = w.shade_hit(comps);
+    ASSERT_EQ(c, Color(0.90498,0.90498,0.90498));
+}
+
+TEST(SeventhChapter, TheColorWhenARayMisses)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    auto r = Ray(Point(0,0,-5),Vector(0,1,0));
+    auto c = w.color_at(r);
+    ASSERT_EQ(c, Color(0,0,0));
+}
+
+TEST(SeventhChapter, TheColorWhenARayHits)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    auto r = Ray(Point(0,0,-5),Vector(0,0,1));
+    auto c = w.color_at(r);
+    ASSERT_EQ(c, Color(0.38066,0.47583,0.2855));
+}
+
+TEST(SeventhChapter, TheColorWithAnIntersectionBehindTheRay)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    w.objects[0]->material.ambient = 1;
+    w.objects[1]->material.ambient = 1;
+    auto r = Ray(Point(0,0,0.75),Vector(0,0,-1));
+    auto c = w.color_at(r);
+    ASSERT_EQ(c, w.objects[1]->material.color);
+}
+
+TEST(SeventhChapter, TheTransformationMatrixForTheDefaultOrientation)
+{
+    using namespace TJRayTracer;
+    auto from = Point(0,0,0);
+    auto to = Point(0,0,-1);
+    auto up = Vector(0,1,0);
+    auto t = TF::view_transform(from,to,up);
+    ASSERT_EQ((t==TF::identity()), true);
+}
+
+TEST(SeventhChapter, AViewTransformationMatrixLookingInPositiveZDirection)
+{
+    using namespace TJRayTracer;
+    auto from = Point(0,0,8);
+    auto to = Point(0,0,0);
+    auto up = Vector(0,1,0);
+    auto t = TF::view_transform(from,to,up);
+    ASSERT_EQ((t==TF::translation(0,0,-8)),true);
+}
+
+TEST(SeventhChapter, AnArbitraryViewTransformation)
+{
+    using namespace TJRayTracer;
+    auto from = Point(1,3,2);
+    auto to = Point(4,-2,8);
+    auto up = Vector(1,1,0);
+    auto t = TF::view_transform(from,to,up);
+    auto matrix = MatrixXd<double,4,4>();
+    matrix(0,0) = -0.50709;
+    matrix(0,1) = 0.50709;
+    matrix(0,2) = 0.67612;
+    matrix(0,3) = -2.36643;
+    matrix(1,0) = 0.76772;
+    matrix(1,1) = 0.60609;
+    matrix(1,2) = 0.12122;
+    matrix(1,3) = -2.82843;
+    matrix(2,0) = -0.35857;
+    matrix(2,1) = 0.59761;
+    matrix(2,2) = -0.71714;
+    matrix(2,3) = 0.00000;
+    matrix(3,0) = 0.00000;
+    matrix(3,1) = 0.00000;
+    matrix(3,2) = 0.00000;
+    matrix(3,3) = 1.00000;
+    ASSERT_EQ((t==matrix),true);
+}
+
+TEST(SeventhChapter, ConstructingACamera)
+{
+    using namespace TJRayTracer;
+    Camera c(160,120,M_PI_2);
+    ASSERT_EQ(c.hsize,160);
+    ASSERT_EQ(c.vsize,120);
+    ASSERT_EQ(equal(c.fov, M_PI_2), true);
+    ASSERT_EQ(c.tf==TF::identity(),true);
+}
+
+TEST(SeventhChapter, ThePixelSizeForAHorizontalCanvas)
+{
+    using namespace TJRayTracer;
+    Camera c(200,125,M_PI_2);
+    ASSERT_EQ(equal(c.pixel_size,0.01),true);
+}
+
+TEST(SeventhChapter, ThePixelSizeForAVerticalCanvas)
+{
+    using namespace TJRayTracer;
+    Camera c(125,200,M_PI_2);
+    ASSERT_EQ(equal(c.pixel_size,0.01),true);
+}
+
+TEST(SeventhChapter, ConstructingARayThroughTheCenterOfTheCanvas)
+{
+    using namespace TJRayTracer;
+    Camera c(201,101,M_PI_2);
+    auto r = c.ray_for_pixel(100,50);
+    ASSERT_EQ(r.GetOrigin(),Point(0,0,0));
+    ASSERT_EQ(r.GetDirection(),Vector(0,0,-1));
+}
+
+TEST(SeventhChapter, ConstructingARayThroughACornerOfTheCanvas)
+{
+    using namespace TJRayTracer;
+    Camera c(201,101,M_PI_2);
+    auto r = c.ray_for_pixel(0,0);
+    ASSERT_EQ(r.GetOrigin(),Point(0,0,0));
+    ASSERT_EQ(r.GetDirection(),Vector(0.66519,0.33259,-0.66851));
+}
+
+TEST(SeventhChapter,ConstructingARayWhenTheCameraIsTransformed)
+{
+    using namespace TJRayTracer;
+    Camera c(201,101,M_PI_2);
+    c.tf = TF::rotation_y(M_PI/4) * TF::translation(0,-2,5);
+    auto r = c.ray_for_pixel(100,50);
+    ASSERT_EQ(r.GetOrigin(),Point(0,2,-5));
+    ASSERT_EQ(r.GetDirection(),Vector(sqrt(2)/2,0,-sqrt(2)/2));
+}
+
+TEST(SeventhChapter,RenderingAWorldWithACamera)
+{
+    using namespace TJRayTracer;
+    World w;
+    w.default_world();
+    Camera c(11,11,M_PI_2);
+    auto from = Point(0,0,-5);
+    auto to = Point(0,0,0);
+    auto up = Vector(0,1,0);
+    c.tf = TF::view_transform(from,to,up);
+    auto canvas = c.render(w);
+    ASSERT_EQ(canvas.GetPixelColor(5,5),Color(0.38066,0.47583,0.2855));
 }
 
 int main(int argc, char **argv)

@@ -25,6 +25,7 @@ namespace TJRayTracer {
         PointLight& operator=(const PointLight&) = default;
     public:
         static Color lighting(const Material& m, const PointLight& light, const Point& position, const Vector& eyev, const Vector& normalv);
+        friend bool operator==(const PointLight& lhs, const PointLight& rhs);
     private:
         Color _intensity;
         Point _position;

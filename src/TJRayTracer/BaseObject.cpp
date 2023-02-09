@@ -35,3 +35,12 @@ TJRayTracer::MatrixXd<double, 4, 4> TJRayTracer::BaseObject::GetTransform() cons
 TJRayTracer::Vector TJRayTracer::BaseObject::normal_at(const TJRayTracer::Point &p) {
     return {0,0,0};
 }
+
+namespace TJRayTracer {
+    bool operator==(const BaseObject &lhs, const BaseObject &rhs) {
+        if ((lhs.material == rhs.material) && (lhs.GetTransform() == rhs.GetTransform())) {
+            return true;
+        }
+        return false;
+    }
+}

@@ -16,7 +16,7 @@ const TJRayTracer::Vector& TJRayTracer::Ray::GetDirection() const
     return _direction;
 }
 
-TJRayTracer::Point TJRayTracer::Ray::position(double t)
+TJRayTracer::Point TJRayTracer::Ray::position(double t) const
 {
     return _origin + t*_direction;
 }

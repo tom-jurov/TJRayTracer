@@ -20,6 +20,9 @@ namespace TJRayTracer {
         [[nodiscard]] MatrixXd<double,4,4> GetTransform() const;
         void operator= (const MatrixXd<double,4,4>& other);
         ~TF() = default;
+
+    public:
+        static MatrixXd<double,4,4> view_transform(const Point& from, const Point& to, const Vector& up);
     private:
         MatrixXd<double,4,4> _transform;
     };
