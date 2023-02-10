@@ -6,24 +6,23 @@
 #define TJRAYTRACER_COLOR_H
 
 namespace TJRayTracer {
-    class Color{
-    public:
-        double red,green,blue;
-    public:
-        Color();
-        Color(double red, double green, double blue);
-        ~Color();
+class Color {
+public:
+  double red, green, blue;
 
-    public:
-        friend bool operator==(const Color &lhs,const Color &rhs);
-        friend Color operator+(const Color &lhs, const Color &rhs);
-        friend Color operator-(const Color &lhs, const Color &rhs);
-        friend Color operator*(const double& scalar, const Color &rhs);
-        friend Color operator*(const Color &lhs, const Color &rhs);
-        Color operator*(const double& scalar) const;
+public:
+  Color();
+  Color(double red, double green, double blue);
+  ~Color();
 
-    };
-}
+public:
+  friend bool operator==(const Color &lhs, const Color &rhs);
+  friend Color operator+(const Color &lhs, const Color &rhs);
+  friend Color operator-(const Color &lhs, const Color &rhs);
+  friend Color operator*(const double &scalar, const Color &rhs);
+  friend Color operator*(const Color &lhs, const Color &rhs);
+  Color operator*(const double &scalar) const;
+};
+} // namespace TJRayTracer
 
-
-#endif //TJRAYTRACER_COLOR_H
+#endif // TJRAYTRACER_COLOR_H

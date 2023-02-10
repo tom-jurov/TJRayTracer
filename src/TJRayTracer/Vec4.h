@@ -6,22 +6,22 @@
 #define TJRAYTRACER_VEC4_H
 #include <iostream>
 
-namespace TJRayTracer{
-    class Vec4 {
-    public:
-        double x, y, z, w;
-    public:
-        Vec4();
-        Vec4(double x, double y, double z, double w);
-        Vec4(const Vec4 &other);
-        virtual ~Vec4();
-        bool IsPoint() const;
-        bool IsVector() const;
+namespace TJRayTracer {
+class Vec4 {
+public:
+  double x, y, z, w;
 
-    public:
-        friend bool operator==(const Vec4 &lhs,const Vec4 &rhs);
-    };
-}
+public:
+  Vec4();
+  Vec4(double x, double y, double z, double w);
+  Vec4(const Vec4 &other);
+  virtual ~Vec4();
+  bool IsPoint() const;
+  bool IsVector() const;
 
+public:
+  friend bool operator==(const Vec4 &lhs, const Vec4 &rhs);
+};
+} // namespace TJRayTracer
 
-#endif //TJRAYTRACER_VEC4_H
+#endif // TJRAYTRACER_VEC4_H

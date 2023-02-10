@@ -6,24 +6,25 @@
 #define TJRAYTRACER_MATERIAL_H
 #include "Color.h"
 namespace TJRayTracer {
-    class Material {
-    public:
-        Material();
-        Material(const Color& color,double ambient, double diffuse, double specular, double shininess);
-        ~Material() = default;
-        Material(Material&&) = default;
-        Material& operator=(Material &&) = default;
-        Material(const Material&) = default;
-        Material& operator=(const Material&) = default;
-        friend bool operator==(const Material& lhs, const Material& rhs);
-    public:
-        Color color;
-        double ambient;
-        double diffuse;
-        double specular;
-        double shininess;
-    };
-}
+class Material {
+public:
+  Material();
+  Material(const Color &color, double ambient, double diffuse, double specular,
+           double shininess);
+  ~Material() = default;
+  Material(Material &&) = default;
+  Material &operator=(Material &&) = default;
+  Material(const Material &) = default;
+  Material &operator=(const Material &) = default;
+  friend bool operator==(const Material &lhs, const Material &rhs);
 
+public:
+  Color color;
+  double ambient;
+  double diffuse;
+  double specular;
+  double shininess;
+};
+} // namespace TJRayTracer
 
-#endif //TJRAYTRACER_MATERIAL_H
+#endif // TJRAYTRACER_MATERIAL_H

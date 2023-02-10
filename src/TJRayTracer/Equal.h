@@ -7,9 +7,8 @@
 #include <cmath>
 #define EPSILON 0.00001
 
-static bool equal(const double &a, const double &b)
-{
-    return (std::abs(a - b) < EPSILON);
+static bool equal(const double &a, const double &b) {
+  return (std::abs(a - b) < EPSILON);
 }
 
-#endif //TJRAYTRACER_EQUAL_H
+#endif // TJRAYTRACER_EQUAL_H
