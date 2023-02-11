@@ -14,8 +14,8 @@ class BaseObject;
 class Intersection {
 public:
   double t;
-  BaseObject *object;
-  Intersection(double _t, TJRayTracer::BaseObject *_object);
+  std::shared_ptr<BaseObject> object;
+  Intersection(double _t, std::shared_ptr<TJRayTracer::BaseObject> _object);
   friend bool operator==(const Intersection &lhs, const Intersection &rhs);
   friend bool operator!=(const Intersection &lhs, const Intersection &rhs);
 

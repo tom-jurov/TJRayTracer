@@ -11,7 +11,7 @@ namespace TJRayTracer {
 class Comps {
 public:
   double t;
-  BaseObject *object;
+  std::shared_ptr<BaseObject> object;
   Point point;
   Point over_point;
   Vector eyev;

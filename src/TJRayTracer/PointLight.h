@@ -8,6 +8,7 @@
 #include "Material.h"
 #include "Point.h"
 #include "Vector.h"
+#include <memory>
 
 namespace TJRayTracer {
 class PointLight {
@@ -25,9 +26,11 @@ public:
   PointLight &operator=(const PointLight &) = default;
 
 public:
-  static Color lighting(const Material &m, const PointLight &light,
-                        const Point &position, const Vector &eyev,
-                        const Vector &normalv, bool in_shadow);
+  static Color lighting(const std::shared_ptr<Material> &m,
+                        const std::shared_ptr<BaseObject> &object,
+                        const PointLight &light, const Point &position,
+                        const Vector &eyev, const Vector &normalv,
+                        bool in_shadow);
   friend bool operator==(const PointLight &lhs, const PointLight &rhs);
 
 private:

@@ -4,8 +4,8 @@
 
 #include "Intersection.h"
 #include "Equal.h"
-TJRayTracer::Intersection::Intersection(double _t,
-                                        TJRayTracer::BaseObject *_object)
+TJRayTracer::Intersection::Intersection(
+    double _t, std::shared_ptr<TJRayTracer::BaseObject> _object)
     : t(_t), object(_object) {}
 
 namespace TJRayTracer {

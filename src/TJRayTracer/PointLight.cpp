@@ -23,13 +23,21 @@ const TJRayTracer::Color &TJRayTracer::PointLight::GetIntensity() const {
 }
 
 TJRayTracer::Color TJRayTracer::PointLight::lighting(
-    const Material &m, const TJRayTracer::PointLight &light,
-    const TJRayTracer::Point &position, const TJRayTracer::Vector &eyev,
-    const TJRayTracer::Vector &normalv, bool in_shadow) {
+    const std::shared_ptr<Material> &m,
+    const std::shared_ptr<BaseObject> &object,
+    const TJRayTracer::PointLight &light, const TJRayTracer::Point &position,
+    const TJRayTracer::Vector &eyev, const TJRayTracer::Vector &normalv,
+    bool in_shadow) {
 
-  auto effectiveColor = m.color * light.GetIntensity();
-  auto lightv = (light.GetPosition() - position).normalize();
-  auto ambient = effectiveColor * m.ambient;
+  Color color;
+  if (m->pattern) {
+    color = m->pattern->pattern_at_object(object, position);
+  } else {
+    color = m->color;
+  }
+  Color effectiveColor = color * light.GetIntensity();
+  Vector lightv = (light.GetPosition() - position).normalize();
+  Color ambient = effectiveColor * m->ambient;
   if (in_shadow) {
     return ambient;
   }
@@ -42,14 +50,14 @@ TJRayTracer::Color TJRayTracer::PointLight::lighting(
     diffuse = Color(0, 0, 0);
     specular = Color(0, 0, 0);
   } else {
-    diffuse = effectiveColor * m.diffuse * light_dot_normal;
+    diffuse = effectiveColor * m->diffuse * light_dot_normal;
     reflectv = Vector::reflect(-lightv, normalv);
     reflect_dot_eye = Vector::dot(reflectv, eyev);
     if (reflect_dot_eye <= 0) {
       specular = Color(0, 0, 0);
     } else {
-      double factor = pow(reflect_dot_eye, m.shininess);
-      specular = light.GetIntensity() * m.specular * factor;
+      double factor = pow(reflect_dot_eye, m->shininess);
+      specular = light.GetIntensity() * m->specular * factor;
     }
   }
   return ambient + diffuse + specular;

@@ -6,7 +6,8 @@
 void TJRayTracer::World::default_world() {
   TJRayTracer::PointLight light(Point(-10, 10, -10), Color(1, 1, 1));
   std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();
-  s1->material = Material(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200);
+  s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
+                                            200, nullptr);
   std::unique_ptr<BaseObject> s2 =
       std::make_unique<TJRayTracer::Sphere>(TF::scaling(0.5, 0.5, 0.5));
   objects.clear();
@@ -38,8 +39,8 @@ TJRayTracer::World::shade_hit(const TJRayTracer::Comps &comps) {
   for (auto &light : light_sources) {
     bool shadowed = this->is_shadowed(comps.over_point);
     color = color + TJRayTracer::PointLight::lighting(
-                        comps.object->material, light, comps.over_point,
-                        comps.eyev, comps.normalv, shadowed);
+                        comps.object->material, comps.object, light,
+                        comps.over_point, comps.eyev, comps.normalv, shadowed);
   }
   return color;
 }

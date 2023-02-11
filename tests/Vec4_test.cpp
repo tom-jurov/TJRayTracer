@@ -1,15 +1,21 @@
+#include "../src/TJRayTracer/BasePattern.h"
 #include "../src/TJRayTracer/Camera.h"
 #include "../src/TJRayTracer/Canvas.h"
+#include "../src/TJRayTracer/CheckersPattern.h"
 #include "../src/TJRayTracer/Color.h"
 #include "../src/TJRayTracer/Comps.h"
 #include "../src/TJRayTracer/Equal.h"
+#include "../src/TJRayTracer/GradientPattern.h"
 #include "../src/TJRayTracer/Intersection.h"
 #include "../src/TJRayTracer/Material.h"
 #include "../src/TJRayTracer/MatrixXd.h"
+#include "../src/TJRayTracer/Plane.h"
 #include "../src/TJRayTracer/Point.h"
 #include "../src/TJRayTracer/PointLight.h"
 #include "../src/TJRayTracer/Ray.h"
+#include "../src/TJRayTracer/RingPattern.h"
 #include "../src/TJRayTracer/Sphere.h"
+#include "../src/TJRayTracer/StrippedPattern.h"
 #include "../src/TJRayTracer/TF.h"
 #include "../src/TJRayTracer/Vec4.h"
 #include "../src/TJRayTracer/Vector.h"
@@ -860,72 +866,73 @@ TEST(FifthChapter, ComputingAPointFromADistance) {
 }
 
 TEST(FifthChapter, IntersectionClass) {
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   TJRayTracer::Intersection i(3.5, s);
   ASSERT_EQ(equal(i.t, 3.5), true);
   ASSERT_EQ(i.object, s);
-  delete (s);
 }
 
 TEST(FifthChapter, AggregatingIntersections) {
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   TJRayTracer::Intersection i1(1, s);
   TJRayTracer::Intersection i2(2, s);
   auto xs = TJRayTracer::Intersection::intersections(i1, i2);
   ASSERT_EQ(xs.size(), 2);
   ASSERT_EQ(equal(xs[0].t, 1), true);
   ASSERT_EQ(equal(xs[1].t, 2), true);
-  delete (s);
 }
 
 TEST(FifthChapter, IntersectSetsTheObjectOnTheIntersection) {
   using namespace TJRayTracer;
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   auto xs = s->intersect(r);
   ASSERT_EQ(xs.size(), 2);
-  ASSERT_EQ(xs[0].object, s);
-  ASSERT_EQ(xs[1].object, s);
-  delete (s);
+  ASSERT_EQ((*xs[0].object.get()), (*s.get()));
+  ASSERT_EQ((*xs[1].object.get()), (*s.get()));
 }
 
 TEST(FifthChapter, TheHitWhenAllInterHavePositiveT) {
   using namespace TJRayTracer;
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i1 = Intersection(1, s);
   auto i2 = Intersection(2, s);
   auto xs = Intersection::intersections(i2, i1);
   auto i = s->hit(xs);
   ASSERT_EQ(i, i1);
-  delete (s);
 }
 
 TEST(FifthChapter, SomeHaveNegativeT) {
   using namespace TJRayTracer;
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i1 = Intersection(-1, s);
   auto i2 = Intersection(1, s);
   auto xs = Intersection::intersections(i2, i1);
   auto i = s->hit(xs);
   ASSERT_EQ(i, i2);
-  delete (s);
 }
 
 TEST(FifthChapter, AllHaveNegativeT) {
   using namespace TJRayTracer;
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i1 = Intersection(-2, s);
   auto i2 = Intersection(-1, s);
   auto xs = Intersection::intersections(i2, i1);
   auto i = s->hit(xs);
   ASSERT_EQ(i != i2, true);
   ASSERT_EQ(i != i1, true);
-  delete (s);
 }
 
 TEST(FifthChapter, TheHitIsAlwaysTheLowestNonnegativeIntersection) {
   using namespace TJRayTracer;
-  TJRayTracer::BaseObject *s = new TJRayTracer::Sphere;
+  std::shared_ptr<TJRayTracer::BaseObject> s =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i1 = Intersection(5, s);
   auto i2 = Intersection(7, s);
   auto i3 = Intersection(-3, s);
@@ -933,7 +940,6 @@ TEST(FifthChapter, TheHitIsAlwaysTheLowestNonnegativeIntersection) {
   auto xs = Intersection::intersections(i1, i2, i3, i4);
   auto i = s->hit(xs);
   ASSERT_EQ(i, i4);
-  delete (s);
 }
 
 TEST(FifthChapter, TranslatingARay) {
@@ -1080,15 +1086,15 @@ TEST(SixthChapter, ASphereHasADefualtMaterial) {
   using namespace TJRayTracer;
   BaseObject *s = new Sphere();
   auto m = s->material;
-  ASSERT_EQ(m, Material());
+  ASSERT_EQ(m, std::make_shared<Material>());
   delete (s);
 }
 
 TEST(SixthChapter, ASphereMayBeAssignedAMaterial) {
   using namespace TJRayTracer;
   BaseObject *s = new Sphere();
-  Material m;
-  m.ambient = 1;
+  auto m = std::make_shared<Material>();
+  m->ambient = 1;
   s->material = m;
   ASSERT_EQ(s->material, m);
   delete (s);
@@ -1096,64 +1102,69 @@ TEST(SixthChapter, ASphereMayBeAssignedAMaterial) {
 
 TEST(SixthChapter, Background) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
-  ASSERT_EQ(m, Material());
+  ASSERT_EQ(m, std::make_shared<Material>());
   ASSERT_EQ(position, Point(0, 0, 0));
 }
 
 TEST(SixthChapter, LightingWithTheEyeBetweenTheLightAndTheSurface) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, 0, -1);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 0, -10), Color(1, 1, 1));
-  auto result = PointLight::lighting(m, light, position, eyev, normalv, false);
+  auto result =
+      PointLight::lighting(m, nullptr, light, position, eyev, normalv, false);
   ASSERT_EQ(result, Color(1.9, 1.9, 1.9));
 }
 
 TEST(SixthChapter, LightingWithTheEyeBetweenTheLightAndTheSurfaceEyeOffset45) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, sqrt(2) / 2, -sqrt(2) / 2);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 0, -10), Color(1, 1, 1));
-  auto result = PointLight::lighting(m, light, position, eyev, normalv, false);
+  auto result =
+      PointLight::lighting(m, nullptr, light, position, eyev, normalv, false);
   ASSERT_EQ(result, Color(1, 1, 1));
 }
 
 TEST(SixthChapter, LightingWithEyeOpposieSurfaceLightOffset45) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, 0, -1);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 10, -10), Color(1, 1, 1));
-  auto result = PointLight::lighting(m, light, position, eyev, normalv, false);
+  auto result =
+      PointLight::lighting(m, nullptr, light, position, eyev, normalv, false);
   ASSERT_EQ(result, Color(0.7364, 0.7364, 0.7364));
 }
 
 TEST(SixthChapter, LightWithEyeInThePathOfTheReflectionVector) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, -sqrt(2) / 2, -sqrt(2) / 2);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 10, -10), Color(1, 1, 1));
-  auto result = PointLight::lighting(m, light, position, eyev, normalv, false);
+  auto result =
+      PointLight::lighting(m, nullptr, light, position, eyev, normalv, false);
   ASSERT_EQ(result, Color(1.6364, 1.6364, 1.6364));
 }
 
 TEST(SixthChapter, LightingWithTheLightBehindTheSurface) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, 0, -1);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 0, 10), Color(1, 1, 1));
-  auto result = PointLight::lighting(m, light, position, eyev, normalv, false);
+  auto result =
+      PointLight::lighting(m, nullptr, light, position, eyev, normalv, false);
   ASSERT_EQ(result, Color(0.1, 0.1, 0.1));
 }
 
@@ -1166,18 +1177,18 @@ TEST(SeventhChapter, EmptyWorld) {
 TEST(SeventhChapter, DefaultWorld) {
   TJRayTracer::PointLight light(TJRayTracer::Point(-10, 10, -10),
                                 TJRayTracer::Color(1, 1, 1));
-  TJRayTracer::BaseObject *s1 = new TJRayTracer::Sphere();
-  s1->material = TJRayTracer::Material(TJRayTracer::Color(0.8, 1.0, 0.6), 0.1,
-                                       0.7, 0.2, 200);
-  TJRayTracer::BaseObject *s2 =
-      new TJRayTracer::Sphere(TJRayTracer::TF::scaling(0.5, 0.5, 0.5));
+  std::shared_ptr<TJRayTracer::BaseObject> s1 =
+      std::make_shared<TJRayTracer::Sphere>();
+  s1->material = std::make_shared<TJRayTracer::Material>(
+      TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200, nullptr);
+  std::shared_ptr<TJRayTracer::BaseObject> s2 =
+      std::make_shared<TJRayTracer::Sphere>(
+          TJRayTracer::TF::scaling(0.5, 0.5, 0.5));
   TJRayTracer::World w;
   w.default_world();
-  ASSERT_EQ(*w.objects[0].get(), *s1);
-  ASSERT_EQ(*w.objects[1].get(), *s2);
+  ASSERT_EQ((*w.objects[0].get()), (*s1.get()));
+  ASSERT_EQ((*w.objects[1].get()), (*s2.get()));
   ASSERT_EQ(w.light_sources[0], light);
-  delete (s1);
-  delete (s2);
 }
 
 TEST(SeventhChapter, IntersectWorldWithRay) {
@@ -1196,7 +1207,7 @@ TEST(SeventhChapter, IntersectWorldWithRay) {
 TEST(SeventhChapter, PrecomputingTheStateOfAnIntersection) {
   using namespace TJRayTracer;
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-  BaseObject *shape = new Sphere();
+  std::shared_ptr<BaseObject> shape = std::make_shared<Sphere>();
   auto i = Intersection(4, shape);
   auto comps = Comps::prepare_computations(i, r);
   ASSERT_EQ(comps.t, i.t);
@@ -1209,7 +1220,8 @@ TEST(SeventhChapter, PrecomputingTheStateOfAnIntersection) {
 TEST(SeventhChapter, TheHitWhenAnIntersectionOccursOnTheOutside) {
   using namespace TJRayTracer;
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-  BaseObject *shape = new Sphere();
+  std::shared_ptr<TJRayTracer::BaseObject> shape =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i = Intersection(4, shape);
   auto comps = Comps::prepare_computations(i, r);
   ASSERT_EQ(comps.inside, false);
@@ -1218,7 +1230,8 @@ TEST(SeventhChapter, TheHitWhenAnIntersectionOccursOnTheOutside) {
 TEST(SeventhChapter, TheHitWhenAnIntersectionOccursOnTheInside) {
   using namespace TJRayTracer;
   auto r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
-  BaseObject *shape = new Sphere();
+  std::shared_ptr<TJRayTracer::BaseObject> shape =
+      std::make_shared<TJRayTracer::Sphere>();
   auto i = Intersection(1, shape);
   auto comps = Comps::prepare_computations(i, r);
   ASSERT_EQ(comps.point, Point(0, 0, 1));
@@ -1232,9 +1245,10 @@ TEST(SeventhChapter, ShadingAnIntersection) {
   World w;
   w.default_world();
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
-  std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();
-  s1->material = Material(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200);
-  auto i = Intersection(4, s1.get());
+  std::shared_ptr<BaseObject> s1 = std::make_shared<TJRayTracer::Sphere>();
+  s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
+                                            200, nullptr);
+  auto i = Intersection(4, s1);
   auto comps = Comps::prepare_computations(i, r);
   auto c = w.shade_hit(comps);
   ASSERT_EQ(c, Color(0.38066, 0.47583, 0.2855));
@@ -1247,9 +1261,9 @@ TEST(SeventhChapter, ShadingAnIntersectionFromTheInside) {
   w.light_sources.clear();
   w.light_sources.push_back(PointLight(Point(0, 0.25, 0), Color(1, 1, 1)));
   auto r = Ray(Point(0, 0, 0), Vector(0, 0, 1));
-  std::unique_ptr<BaseObject> s2 =
-      std::make_unique<TJRayTracer::Sphere>(TF::scaling(0.5, 0.5, 0.5));
-  auto i = Intersection(0.5, s2.get());
+  std::shared_ptr<BaseObject> s2 =
+      std::make_shared<TJRayTracer::Sphere>(TF::scaling(0.5, 0.5, 0.5));
+  auto i = Intersection(0.5, s2);
   auto comps = Comps::prepare_computations(i, r);
   auto c = w.shade_hit(comps);
   ASSERT_EQ(c, Color(0.90498, 0.90498, 0.90498));
@@ -1277,11 +1291,11 @@ TEST(SeventhChapter, TheColorWithAnIntersectionBehindTheRay) {
   using namespace TJRayTracer;
   World w;
   w.default_world();
-  w.objects[0]->material.ambient = 1;
-  w.objects[1]->material.ambient = 1;
+  w.objects[0]->material->ambient = 1;
+  w.objects[1]->material->ambient = 1;
   auto r = Ray(Point(0, 0, 0.75), Vector(0, 0, -1));
   auto c = w.color_at(r);
-  ASSERT_EQ(c, w.objects[1]->material.color);
+  ASSERT_EQ(c, w.objects[1]->material->color);
 }
 
 TEST(SeventhChapter, TheTransformationMatrixForTheDefaultOrientation) {
@@ -1389,14 +1403,14 @@ TEST(SeventhChapter, RenderingAWorldWithACamera) {
 
 TEST(EightChapter, LightingWithTheSurfaceInShadow) {
   using namespace TJRayTracer;
-  Material m;
+  auto m = std::make_shared<Material>();
   Point position(0, 0, 0);
   Vector eyev(0, 0, -1);
   Vector normalv(0, 0, -1);
   PointLight light(Point(0, 0, -10), Color(1, 1, 1));
   bool in_shadow = true;
-  auto result =
-      PointLight::lighting(m, light, position, eyev, normalv, in_shadow);
+  auto result = PointLight::lighting(m, nullptr, light, position, eyev, normalv,
+                                     in_shadow);
   ASSERT_EQ(result, Color(0.1, 0.1, 0.1));
 }
 
@@ -1425,7 +1439,7 @@ TEST(EightChapter, IsShadowedRenderingColor) {
   s2->SetTransform(TF::translation(0, 0, 10));
   w.objects.push_back(s2);
   Ray ray(Point(0, 0, 5), Vector(0, 0, 1));
-  auto i = Intersection(4, s2.get());
+  auto i = Intersection(4, s2);
   auto comps = Comps::prepare_computations(i, ray);
   Color c = w.shade_hit(comps);
   ASSERT_EQ(c, Color(0.1, 0.1, 0.1));
@@ -1452,10 +1466,258 @@ TEST(EightChapter, TheHitShouldOffsetThePoint) {
   Ray r(Point(0, 0, -5), Vector(0, 0, 1));
   std::shared_ptr<BaseObject> shape = std::make_shared<Sphere>();
   shape->SetTransform(TF::translation(0, 0, 1));
-  auto i = Intersection(5, shape.get());
+  auto i = Intersection(5, shape);
   auto comps = Comps::prepare_computations(i, r);
   ASSERT_EQ(comps.over_point.z < -EPSILON / 2, true);
   ASSERT_EQ(comps.point.z > comps.over_point.z, true);
+}
+
+TEST(Ninth, TheDefaultTransformation) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> s = std::make_unique<Sphere>();
+  ASSERT_EQ(s->GetTransform() == TF::identity(), true);
+}
+
+TEST(Ninth, SetTransformation) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> s = std::make_unique<Sphere>();
+  s->SetTransform(TF::translation(2, 3, 4));
+  ASSERT_EQ(s->GetTransform() == TF::translation(2, 3, 4), true);
+}
+
+TEST(Ninth, AssigningAMaterial) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> s = std::make_unique<Sphere>();
+  auto m = s->material;
+  m->ambient = 1;
+  s->material = m;
+  ASSERT_EQ(m, s->material);
+}
+
+TEST(Ninth, TheDefaultMaterial) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> s = std::make_unique<Sphere>();
+  auto m = s->material;
+  ASSERT_EQ(m, std::make_shared<Material>());
+}
+
+TEST(Ninth, TheNormalOfAPlaneIsConstant) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> p = std::make_unique<Plane>();
+  auto n1 = p->local_normal_at(Point(0, 0, 0));
+  auto n2 = p->local_normal_at(Point(10, 0, -10));
+  auto n3 = p->local_normal_at(Point(-5, 0, 150));
+  ASSERT_EQ(n1, Vector(0, 1, 0));
+  ASSERT_EQ(n2, Vector(0, 1, 0));
+  ASSERT_EQ(n3, Vector(0, 1, 0));
+}
+
+TEST(Ninth, IntersectWithARayParallelToThePlane) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> p = std::make_unique<Plane>();
+  Ray r(Point(0, 10, 0), Vector(0, 0, 1));
+  auto xs = p->local_intersect(r);
+  ASSERT_EQ(xs.size(), 0);
+}
+
+TEST(Ninth, IntersectWithACoplanarRay) {
+  using namespace TJRayTracer;
+  std::unique_ptr<BaseObject> p = std::make_unique<Plane>();
+  Ray r(Point(0, 0, 0), Vector(0, 0, 1));
+  auto xs = p->local_intersect(r);
+  ASSERT_EQ(xs.size(), 0);
+}
+
+TEST(Ninth, ARayIntersectingAPlaneFromAbove) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> p = std::make_shared<Plane>();
+  Ray r(Point(0, 1, 0), Vector(0, -1, 0));
+  auto xs = p->local_intersect(r);
+  ASSERT_EQ(xs.size(), 1);
+  ASSERT_EQ(equal(xs[0].t, 1), true);
+  ASSERT_EQ((*xs[0].object.get()), (*p.get()));
+}
+
+TEST(Ninth, ARayIntersectingAPlaneFromBelow) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> p = std::make_shared<Plane>();
+  Ray r(Point(0, -1, 0), Vector(0, 1, 0));
+  auto xs = p->local_intersect(r);
+  ASSERT_EQ(xs.size(), 1);
+  ASSERT_EQ(equal(xs[0].t, 1), true);
+  ASSERT_EQ((*xs[0].object.get()), (*p.get()));
+}
+
+TEST(Tenth, CreatingAStripePattern) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  StrippedPattern pattern(white, black);
+  ASSERT_EQ(pattern.a, white);
+  ASSERT_EQ(pattern.b, black);
+}
+
+TEST(Tenth, AStripePatternIsConstantInY) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  StrippedPattern pattern(white, black);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 1, 0)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 2, 0)), white);
+}
+
+TEST(Tenth, AStripePatternIsConstantInZ) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  StrippedPattern pattern(white, black);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 0, 1)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 0, 2)), white);
+}
+
+TEST(Tenth, AStripePatternAlternatesInX) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  StrippedPattern pattern(white, black);
+  ASSERT_EQ(pattern.pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(0.9, 0, 0)), white);
+  ASSERT_EQ(pattern.pattern_at(Point(1, 0, 0)), black);
+  ASSERT_EQ(pattern.pattern_at(Point(-0.1, 0, 0)), black);
+  ASSERT_EQ(pattern.pattern_at(Point(-1, 0, 0)), black);
+  ASSERT_EQ(pattern.pattern_at(Point(-1.1, 0, 0)), white);
+}
+
+TEST(Tenth, LightingWithAPatternApplied) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  std::shared_ptr<StrippedPattern> pattern =
+      std::make_shared<StrippedPattern>(white, black);
+  auto m = std::make_shared<Material>();
+  m->pattern = pattern;
+  m->ambient = 1;
+  m->diffuse = 0;
+  m->specular = 0;
+  auto sphere = std::make_shared<Sphere>();
+  Vector eyev(0, 0, -1);
+  Vector normalv(0, 0, -1);
+  PointLight light(Point(0, 0, -10), Color(1, 1, 1));
+  auto c1 = PointLight::lighting(m, sphere, light, Point(0.9, 0, 0), eyev,
+                                 normalv, false);
+  auto c2 = PointLight::lighting(m, sphere, light, Point(1.1, 0, 0), eyev,
+                                 normalv, false);
+  ASSERT_EQ(c1, white);
+  ASSERT_EQ(c2, black);
+}
+
+TEST(Tenth, StripesWithAnObjectTransformation) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  std::shared_ptr<BaseObject> object = std::make_shared<Sphere>();
+  object->SetTransform(TF::scaling(2, 2, 2));
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<StrippedPattern>(white, black);
+  Color c = pattern->pattern_at_object(object, Point(1.5, 0, 0));
+  ASSERT_EQ(c, white);
+}
+
+TEST(Tenth, StripesWithAPatternTransformation) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  std::shared_ptr<BaseObject> object = std::make_shared<Sphere>();
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<StrippedPattern>(white, black);
+  pattern->SetTransform(TF::scaling(2, 2, 2));
+  Color c = pattern->pattern_at_object(object, Point(1.5, 0, 0));
+  ASSERT_EQ(c, white);
+}
+
+TEST(Tenth, StripesWithBothAnObjectAndAPatternTransformation) {
+  using namespace TJRayTracer;
+  Color black(0, 0, 0);
+  Color white(1, 1, 1);
+  std::shared_ptr<BaseObject> object = std::make_shared<Sphere>();
+  object->SetTransform(TF::scaling(2, 2, 2));
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<StrippedPattern>(white, black);
+  pattern->SetTransform(TF::translation(0.5, 0, 0));
+  Color c = pattern->pattern_at_object(object, Point(2.5, 0, 0));
+  ASSERT_EQ(c, white);
+}
+
+TEST(Tenth, TheDefaultPatternTransformation) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BasePattern> pattern = std::make_shared<StrippedPattern>();
+  ASSERT_EQ(pattern->GetTransform() == TF::identity(), true);
+}
+
+TEST(Tenth, AssigningATransformation) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BasePattern> pattern = std::make_shared<StrippedPattern>();
+  pattern->SetTransform(TF::translation(1, 2, 3));
+  ASSERT_EQ(pattern->GetTransform() == TF::translation(1, 2, 3), true);
+}
+
+TEST(Tenth, AGradientLinearlyInterpolatesBetweenColors) {
+  using namespace TJRayTracer;
+  Color white(1, 1, 1);
+  Color black(0, 0, 0);
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<GradientPattern>(white, black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0.25, 0, 0)), Color(0.75, 0.75, 0.75));
+  ASSERT_EQ(pattern->pattern_at(Point(0.5, 0, 0)), Color(0.5, 0.5, 0.5));
+  ASSERT_EQ(pattern->pattern_at(Point(0.75, 0, 0)), Color(0.25, 0.25, 0.25));
+}
+
+TEST(Tenth, ARingShouldExtendInBothXAndZ) {
+  using namespace TJRayTracer;
+  Color white(1, 1, 1);
+  Color black(0, 0, 0);
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<RingPattern>(white, black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(1, 0, 0)), black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 1)), black);
+  ASSERT_EQ(pattern->pattern_at(Point(0.708, 0, 0.708)), black);
+}
+
+TEST(Tenth, CheckersShouldRepeatInX) {
+  using namespace TJRayTracer;
+  Color white(1, 1, 1);
+  Color black(0, 0, 0);
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<CheckersPattern>(white, black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0.99, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(1.01, 0, 0)), black);
+}
+
+TEST(Tenth, CheckersShouldRepeatInY) {
+  using namespace TJRayTracer;
+  Color white(1, 1, 1);
+  Color black(0, 0, 0);
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<CheckersPattern>(white, black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0.99, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 1.01, 0)), black);
+}
+
+TEST(Tenth, CheckersShouldRepeatInZ) {
+  using namespace TJRayTracer;
+  Color white(1, 1, 1);
+  Color black(0, 0, 0);
+  std::shared_ptr<BasePattern> pattern =
+      std::make_shared<CheckersPattern>(white, black);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0.99)), white);
+  ASSERT_EQ(pattern->pattern_at(Point(0, 0, 1.01)), black);
 }
 
 int main(int argc, char **argv) {
