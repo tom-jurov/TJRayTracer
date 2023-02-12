@@ -59,3 +59,19 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
 
   return result;
 }
+
+double TJRayTracer::Comps::schlick(const Comps &comps) {
+  double cos = Vector::dot(comps.eyev, comps.normalv);
+
+  if (comps.n1 > comps.n2) {
+    double n = comps.n1 / comps.n2;
+    double sin2_t = n * n * (1.0 - cos * cos);
+    if (sin2_t > 1.0) {
+      return 1.0;
+    }
+    double cos_t = sqrt(1.0 - sin2_t);
+    cos = cos_t;
+  }
+  double r0 = pow(((comps.n1 - comps.n2) / (comps.n1 + comps.n2)), 2);
+  return r0 + (1 - r0) * pow((1 - cos), 5);
+}

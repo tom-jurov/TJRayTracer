@@ -1951,6 +1951,60 @@ TEST(Eleventh, shade_hitWithATransparentMaterial) {
   ASSERT_EQ(color, Color(0.93642, 0.68642, 0.68642));
 }
 
+TEST(Eleventh, TheSchlickApproximationUnderTotalInternalReflection) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = Sphere::Glass_sphere();
+  Ray r(Point(0, 0, sqrt(2) / 2), Vector(0, 1, 0));
+  auto xs = Intersection::intersections(Intersection(-sqrt(2) / 2, shape),
+                                        Intersection(sqrt(2) / 2, shape));
+  auto comps = Comps::prepare_computations(xs[1], r, xs);
+  double reflectance = Comps::schlick(comps);
+  ASSERT_EQ(equal(reflectance, 1.0), true);
+}
+
+TEST(Eleventh, TheSchlickApproximationWithAPerpendicularViewingAngle) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = Sphere::Glass_sphere();
+  Ray r(Point(0, 0, 0), Vector(0, 1, 0));
+  auto xs = Intersection::intersections(Intersection(-1, shape),
+                                        Intersection(1, shape));
+  auto comps = Comps::prepare_computations(xs[1], r, xs);
+  double reflectance = Comps::schlick(comps);
+  ASSERT_EQ(equal(reflectance, 0.04), true);
+}
+
+TEST(Eleventh, TheSchlickApproximationWithSmallAngleAndN2greaterN1) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = Sphere::Glass_sphere();
+  Ray r(Point(0, 0.99, -2), Vector(0, 0, 1));
+  auto xs = Intersection::intersections(Intersection(1.8589, shape));
+  auto comps = Comps::prepare_computations(xs[0], r, xs);
+  double reflectance = Comps::schlick(comps);
+  ASSERT_EQ(equal(reflectance, 0.48873), true);
+}
+
+TEST(Eleventh, shade_hitWithAReflectiveTransparentMaterial) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto floor = std::make_shared<Plane>();
+  floor->SetTransform(TF::translation(0, -1, 0));
+  floor->material->reflective = 0.5;
+  floor->material->transparency = 0.5;
+  floor->material->refractive_index = 1.5;
+  w.objects.push_back(floor);
+  auto ball = std::make_shared<Sphere>();
+  ball->material->color = Color(1, 0, 0);
+  ball->material->ambient = 0.5;
+  ball->SetTransform(TF::translation(0, -3.5, -0.5));
+  w.objects.push_back(ball);
+  Ray r(Point(0, 0, -3), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  auto xs = Intersection::intersections(Intersection(sqrt(2), floor));
+  auto comps = Comps::prepare_computations(xs[0], r, xs);
+  Color color = w.shade_hit(comps, 5);
+  ASSERT_EQ(color, Color(0.93391, 0.69643, 0.69243));
+}
+
 int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

@@ -48,8 +48,14 @@ TJRayTracer::World::shade_hit(const TJRayTracer::Comps &comps,
                       comps.over_point, comps.eyev, comps.normalv, shadowed);
     reflected = this->reflected_color(comps, remaining);
     refracted = this->refracted_color(comps, remaining);
+    auto material = comps.object->material;
+    if (material->reflective > 0 && material->transparency > 0) {
+      double reflectance = Comps::schlick(comps);
+      return surface + reflected * reflectance + refracted * (1 - reflectance);
+    } else {
+      return surface + reflected + refracted;
+    }
   }
-  return surface + reflected + refracted;
 }
 
 TJRayTracer::Color TJRayTracer::World::color_at(const TJRayTracer::Ray &ray,

@@ -27,6 +27,7 @@ public:
   prepare_computations(const TJRayTracer::Intersection &intersection,
                        const TJRayTracer::Ray &ray,
                        std::vector<Intersection> intersections = {});
+  static double schlick(const Comps &comps);
 
 public:
   Comps() = default;
