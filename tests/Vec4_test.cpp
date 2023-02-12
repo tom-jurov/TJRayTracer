@@ -1180,7 +1180,7 @@ TEST(SeventhChapter, DefaultWorld) {
   std::shared_ptr<TJRayTracer::BaseObject> s1 =
       std::make_shared<TJRayTracer::Sphere>();
   s1->material = std::make_shared<TJRayTracer::Material>(
-      TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200, nullptr);
+      TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200, nullptr, 0.0);
   std::shared_ptr<TJRayTracer::BaseObject> s2 =
       std::make_shared<TJRayTracer::Sphere>(
           TJRayTracer::TF::scaling(0.5, 0.5, 0.5));
@@ -1247,7 +1247,7 @@ TEST(SeventhChapter, ShadingAnIntersection) {
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
   std::shared_ptr<BaseObject> s1 = std::make_shared<TJRayTracer::Sphere>();
   s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
-                                            200, nullptr);
+                                            200, nullptr, 0.0);
   auto i = Intersection(4, s1);
   auto comps = Comps::prepare_computations(i, r);
   auto c = w.shade_hit(comps);
@@ -1718,6 +1718,89 @@ TEST(Tenth, CheckersShouldRepeatInZ) {
   ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0)), white);
   ASSERT_EQ(pattern->pattern_at(Point(0, 0, 0.99)), white);
   ASSERT_EQ(pattern->pattern_at(Point(0, 0, 1.01)), black);
+}
+
+TEST(Eleventh, ReflectionVector) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = std::make_shared<Plane>();
+  Ray r(Point(0, 1, -1), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  Intersection i(sqrt(2) / 2, shape);
+  auto comps = Comps::prepare_computations(i, r);
+  ASSERT_EQ(comps.reflectv, Vector(0, sqrt(2) / 2, sqrt(2) / 2));
+}
+
+TEST(Eleventh, TheReflectedColorForANonreflectiveMaterial) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  Ray r(Point(0, 0, 0), Vector(0, 0, 1));
+  auto shape = w.objects[1];
+  shape->material->ambient = 1;
+  Intersection i(1, shape);
+  auto comps = Comps::prepare_computations(i, r);
+  Color color = w.reflected_color(comps);
+  ASSERT_EQ(color, Color(0, 0, 0));
+}
+
+TEST(Eleventh, TheReflectedColorForAReflectiveMaterial) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = std::make_shared<Plane>();
+  shape->material->reflective = 0.5;
+  shape->SetTransform(TF::translation(0, -1, 0));
+  World w;
+  w.default_world();
+  w.objects.push_back(shape);
+  Ray r(Point(0, 0, -3), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  Intersection i(sqrt(2), shape);
+  auto comps = Comps::prepare_computations(i, r);
+  Color color = w.reflected_color(comps);
+  ASSERT_EQ(color, Color(0.190332, 0.237915, 0.142749));
+}
+
+TEST(Eleventh, shade_hitWithAReflectiveMaterial) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> shape = std::make_shared<Plane>();
+  shape->material->reflective = 0.5;
+  shape->SetTransform(TF::translation(0, -1, 0));
+  World w;
+  w.default_world();
+  w.objects.push_back(shape);
+  Ray r(Point(0, 0, -3), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  Intersection i(sqrt(2), shape);
+  auto comps = Comps::prepare_computations(i, r);
+  Color color = w.shade_hit(comps);
+  ASSERT_EQ(color, Color(0.876757, 0.92435, 0.82918));
+}
+
+TEST(Eleventh, TwoMirrorsInfinityLoop) {
+  using namespace TJRayTracer;
+  World w;
+  w.light_sources.push_back(PointLight(Point(0, 0, 0), Color(1, 1, 1)));
+  std::shared_ptr<BaseObject> lower = std::make_shared<Plane>();
+  lower->material->reflective = 1;
+  lower->SetTransform(TF::translation(0, -1, 0));
+  std::shared_ptr<BaseObject> upper = std::make_shared<Plane>();
+  upper->material->reflective = 1;
+  upper->SetTransform(TF::translation(0, 1, 0));
+  w.objects.push_back(lower);
+  w.objects.push_back(upper);
+  Ray r(Point(0, 0, 0), Vector(0, 1, 0));
+  Color c = w.color_at(r);
+}
+
+TEST(Eleventh, TheReflectedColorAtTheMaximumRecursiveDepth) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  std::shared_ptr<BaseObject> shape = std::make_shared<Plane>();
+  shape->material->reflective = 0.5;
+  shape->SetTransform(TF::translation(0, -1, 0));
+  w.objects.push_back(shape);
+  Ray r(Point(0, 0, -3), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  auto i = Intersection(sqrt(2), shape);
+  auto comps = Comps::prepare_computations(i, r);
+  Color color = w.reflected_color(comps, 0);
+  ASSERT_EQ(color, Color(0, 0, 0));
 }
 
 int main(int argc, char **argv) {

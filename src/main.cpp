@@ -5,6 +5,7 @@
 #include "TJRayTracer/Camera.h"
 #include "TJRayTracer/Canvas.h"
 #include "TJRayTracer/CheckersPattern.h"
+#include "TJRayTracer/GradientPattern.h"
 #include "TJRayTracer/Material.h"
 #include "TJRayTracer/MatrixXd.h"
 #include "TJRayTracer/Plane.h"
@@ -58,11 +59,16 @@ int main() {
   right_wall->material = std::make_shared<TJRayTracer::Material>();
   right_wall->material->pattern = pattern;
 
+  std::shared_ptr<TJRayTracer::BasePattern> gradient =
+      std::make_shared<TJRayTracer::GradientPattern>(
+          TJRayTracer::Color(1, 0, 0),
+          TJRayTracer::Color(1, 253 / (double)255, 15 / double(255)));
+  gradient->SetTransform(TJRayTracer::TF::rotation_y(M_PI / 2.3));
   std::shared_ptr<TJRayTracer::BaseObject> middle =
       std::make_shared<TJRayTracer::Sphere>();
   middle->SetTransform(TJRayTracer::TF::translation(-0.5, 1, 0.5));
   middle->material = std::make_shared<TJRayTracer::Material>();
-  middle->material->pattern = pattern;
+  middle->material->pattern = gradient;
   middle->material->color = TJRayTracer::Color(0.1, 1, 0.5);
   middle->material->diffuse = 0.7;
   middle->material->specular = 0.3;

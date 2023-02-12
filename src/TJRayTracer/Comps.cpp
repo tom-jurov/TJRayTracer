@@ -21,6 +21,7 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
     result.inside = false;
   }
   result.over_point = result.point + result.normalv * EPSILON;
+  result.reflectv = Vector::reflect(ray.GetDirection(), result.normalv);
 
   return result;
 }

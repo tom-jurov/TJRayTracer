@@ -17,6 +17,7 @@ public:
   Vector eyev;
   Vector normalv;
   bool inside;
+  Vector reflectv;
 
 public:
   static TJRayTracer::Comps

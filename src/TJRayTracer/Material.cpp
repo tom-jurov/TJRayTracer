@@ -5,9 +5,10 @@
 #include "Material.h"
 TJRayTracer::Material::Material(
     const Color &color, double ambient, double diffuse, double specular,
-    double shininess, const std::shared_ptr<BasePattern> strippedPattern)
+    double shininess, const std::shared_ptr<BasePattern> strippedPattern,
+    double reflective)
     : color(color), ambient(ambient), diffuse(diffuse), specular(specular),
-      shininess(shininess), pattern(strippedPattern) {}
+      shininess(shininess), pattern(strippedPattern), reflective(reflective) {}
 
 TJRayTracer::Material::Material() {
   color = Color(1, 1, 1);
@@ -16,6 +17,7 @@ TJRayTracer::Material::Material() {
   specular = 0.9;
   shininess = 200.0;
   pattern = nullptr;
+  reflective = 0.0;
 }
 namespace TJRayTracer {
 bool operator==(const std::shared_ptr<TJRayTracer::Material> &lhs,

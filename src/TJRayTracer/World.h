@@ -19,8 +19,10 @@ public:
 
 public:
   [[nodiscard]] std::vector<Intersection> intersect_world(const Ray &ray);
-  TJRayTracer::Color shade_hit(const Comps &comps);
-  TJRayTracer::Color color_at(const Ray &ray);
+  TJRayTracer::Color shade_hit(const Comps &comps, unsigned int remaining = 5);
+  TJRayTracer::Color color_at(const Ray &ray, unsigned int remaining = 5);
+  TJRayTracer::Color reflected_color(const Comps &comps,
+                                     unsigned int remaining = 5);
   bool is_shadowed(const Point &point);
 
 public:

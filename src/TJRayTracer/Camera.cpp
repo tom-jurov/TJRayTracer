@@ -36,7 +36,7 @@ TJRayTracer::Canvas TJRayTracer::Camera::render(TJRayTracer::World &world) {
   for (std::size_t y = 0; y < vsize; ++y) {
     for (std::size_t x = 0; x < hsize; ++x) {
       TJRayTracer::Ray ray = this->ray_for_pixel(x, y);
-      TJRayTracer::Color color = world.color_at(ray);
+      TJRayTracer::Color color = world.color_at(ray, 2);
       canvas.SetPixelColor(x, y, color);
     }
   }
