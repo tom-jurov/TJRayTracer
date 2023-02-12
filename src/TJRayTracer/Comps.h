@@ -14,15 +14,19 @@ public:
   std::shared_ptr<BaseObject> object;
   Point point;
   Point over_point;
+  Point under_point;
   Vector eyev;
   Vector normalv;
   bool inside;
   Vector reflectv;
+  double n1;
+  double n2;
 
 public:
   static TJRayTracer::Comps
   prepare_computations(const TJRayTracer::Intersection &intersection,
-                       const TJRayTracer::Ray &ray);
+                       const TJRayTracer::Ray &ray,
+                       std::vector<Intersection> intersections = {});
 
 public:
   Comps() = default;

@@ -28,6 +28,7 @@ int main() {
       std::make_shared<TJRayTracer::Plane>();
   floor->SetTransform(TJRayTracer::TF::scaling(1, 1, 1));
   floor->material = std::make_shared<TJRayTracer::Material>();
+  floor->material->reflective = 0.5;
   floor->material->pattern = pattern;
   floor->material->color = TJRayTracer::Color(1, 0.9, 0.9);
   floor->material->specular = 0;

@@ -17,6 +17,7 @@
 #include "../src/TJRayTracer/Sphere.h"
 #include "../src/TJRayTracer/StrippedPattern.h"
 #include "../src/TJRayTracer/TF.h"
+#include "../src/TJRayTracer/TestPattern.h"
 #include "../src/TJRayTracer/Vec4.h"
 #include "../src/TJRayTracer/Vector.h"
 #include "../src/TJRayTracer/World.h"
@@ -1180,7 +1181,8 @@ TEST(SeventhChapter, DefaultWorld) {
   std::shared_ptr<TJRayTracer::BaseObject> s1 =
       std::make_shared<TJRayTracer::Sphere>();
   s1->material = std::make_shared<TJRayTracer::Material>(
-      TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200, nullptr, 0.0);
+      TJRayTracer::Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200, nullptr, 0.0, 0.0,
+      1.0);
   std::shared_ptr<TJRayTracer::BaseObject> s2 =
       std::make_shared<TJRayTracer::Sphere>(
           TJRayTracer::TF::scaling(0.5, 0.5, 0.5));
@@ -1247,7 +1249,7 @@ TEST(SeventhChapter, ShadingAnIntersection) {
   auto r = Ray(Point(0, 0, -5), Vector(0, 0, 1));
   std::shared_ptr<BaseObject> s1 = std::make_shared<TJRayTracer::Sphere>();
   s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
-                                            200, nullptr, 0.0);
+                                            200, nullptr, 0.0, 0.0, 1.0);
   auto i = Intersection(4, s1);
   auto comps = Comps::prepare_computations(i, r);
   auto c = w.shade_hit(comps);
@@ -1801,6 +1803,152 @@ TEST(Eleventh, TheReflectedColorAtTheMaximumRecursiveDepth) {
   auto comps = Comps::prepare_computations(i, r);
   Color color = w.reflected_color(comps, 0);
   ASSERT_EQ(color, Color(0, 0, 0));
+}
+
+TEST(Eleventh, TransparencyAndRefractiveIndexForTheDefaultMaterial) {
+  using namespace TJRayTracer;
+  auto m = std::make_shared<Material>();
+  ASSERT_EQ(equal(m->transparency, 0.0), true);
+  ASSERT_EQ(equal(m->refractive_index, 1.0), true);
+}
+
+TEST(Eleventh, AHelperForProducingASphereWithAGlassyMaterial) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> s = Sphere::Glass_sphere();
+  ASSERT_EQ(s->GetTransform() == TF::identity(), true);
+  ASSERT_EQ(equal(s->material->transparency, 1.0), true);
+  ASSERT_EQ(equal(s->material->refractive_index, 1.5), true);
+}
+
+TEST(Eleventh, FindingN1AndN2AtVariousIntersections) {
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> A = Sphere::Glass_sphere();
+  A->SetTransform(TF::scaling(2, 2, 2));
+  A->material->refractive_index = 1.5;
+  std::shared_ptr<BaseObject> B = Sphere::Glass_sphere();
+  B->SetTransform(TF::translation(0, 0, -0.25));
+  B->material->refractive_index = 2.0;
+  std::shared_ptr<BaseObject> C = Sphere::Glass_sphere();
+  C->SetTransform(TF::translation(0, 0, 0.25));
+  C->material->refractive_index = 2.5;
+  Ray r(Point(0, 0, -4), Vector(0, 0, 1));
+  auto xs = Intersection::intersections(
+      Intersection(2, A), Intersection(2.75, B), Intersection(3.25, C),
+      Intersection(4.75, B), Intersection(5.25, C), Intersection(6, A));
+  std::vector<double> n1;
+  std::vector<double> n2;
+  n1.emplace_back(1.0);
+  n1.emplace_back(1.5);
+  n1.emplace_back(2.0);
+  n1.emplace_back(2.5);
+  n1.emplace_back(2.5);
+  n1.emplace_back(1.5);
+  n2.emplace_back(1.5);
+  n2.emplace_back(2.0);
+  n2.emplace_back(2.5);
+  n2.emplace_back(2.5);
+  n2.emplace_back(1.5);
+  n2.emplace_back(1.0);
+  for (int i = 0; i < 6; ++i) {
+    auto comps = Comps::prepare_computations(xs[i], r, xs);
+    ASSERT_EQ(equal(comps.n1, n1[i]), true);
+    ASSERT_EQ(equal(comps.n2, n2[i]), true);
+  }
+}
+
+TEST(Eleventh, TheUnderPointIsOffsetBelowTheSurface) {
+  using namespace TJRayTracer;
+  Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+  std::shared_ptr<BaseObject> shape = Sphere::Glass_sphere();
+  shape->SetTransform(TF::translation(0, 0, 1));
+  auto i = Intersection(5, shape);
+  auto xs = Intersection::intersections(i);
+  auto comps = Comps::prepare_computations(i, r, xs);
+  ASSERT_EQ(comps.under_point.z > EPSILON / 2, true);
+  ASSERT_EQ(comps.point.z < comps.under_point.z, true);
+}
+
+TEST(Eleventh, TheRefractedColorWithAnOpaqueSurface) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto shape = w.objects[0];
+  Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+  auto xs = Intersection::intersections(Intersection(4, shape),
+                                        Intersection(6, shape));
+  auto comps = Comps::prepare_computations(xs[0], r, xs);
+  Color c = w.refracted_color(comps, 5);
+  ASSERT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(Eleventh, TheRefractedColorAtTheMaximumRecursiveDepth) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto shape = w.objects[0];
+  shape->material->transparency = 1.0;
+  shape->material->refractive_index = 1.5;
+  Ray r(Point(0, 0, -5), Vector(0, 0, 1));
+  auto xs = Intersection::intersections(Intersection(4, shape),
+                                        Intersection(6, shape));
+  auto comps = Comps::prepare_computations(xs[0], r, xs);
+  Color c = w.refracted_color(comps, 0);
+  ASSERT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(Eleventh, TheRefractedColorUnderTotalInternalReflection) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto shape = w.objects[0];
+  shape->material->transparency = 1.0;
+  shape->material->refractive_index = 1.5;
+  Ray r(Point(0, 0, sqrt(2) / 2), Vector(0, 1, 0));
+  auto xs = Intersection::intersections(Intersection(-sqrt(2) / 2, shape),
+                                        Intersection(sqrt(2) / 2, shape));
+  auto comps = Comps::prepare_computations(xs[1], r, xs);
+  Color c = w.refracted_color(comps, 5);
+  ASSERT_EQ(c, Color(0, 0, 0));
+}
+
+TEST(Eleventh, TheRefractedColorWithARefractedRay) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto A = w.objects[0];
+  A->material->ambient = 1.0;
+  A->material->pattern = std::make_shared<TestPattern>();
+  auto B = w.objects[1];
+  B->material->transparency = 1.0;
+  B->material->refractive_index = 1.5;
+  Ray r(Point(0, 0, 0.1), Vector(0, 1, 0));
+  auto xs = Intersection::intersections(
+      Intersection(-0.9899, A), Intersection(-0.4899, B),
+      Intersection(0.4899, B), Intersection(0.9899, A));
+  auto comps = Comps::prepare_computations(xs[2], r, xs);
+  auto c = w.refracted_color(comps, 5);
+  ASSERT_EQ(c, Color(0, 0.998875, 0.047219));
+}
+
+TEST(Eleventh, shade_hitWithATransparentMaterial) {
+  using namespace TJRayTracer;
+  World w;
+  w.default_world();
+  auto floor = std::make_shared<Plane>();
+  floor->SetTransform(TF::translation(0, -1, 0));
+  floor->material->transparency = 0.5;
+  floor->material->refractive_index = 1.5;
+  w.objects.push_back(floor);
+  auto ball = std::make_shared<Sphere>();
+  ball->material->color = Color(1, 0, 0);
+  ball->material->ambient = 0.5;
+  ball->SetTransform(TF::translation(0, -3.5, -0.5));
+  w.objects.push_back(ball);
+  Ray r(Point(0, 0, -3), Vector(0, -sqrt(2) / 2, sqrt(2) / 2));
+  auto xs = Intersection::intersections(Intersection(sqrt(2), floor));
+  auto comps = Comps::prepare_computations(xs[0], r, xs);
+  Color color = w.shade_hit(comps, 5);
+  ASSERT_EQ(color, Color(0.93642, 0.68642, 0.68642));
 }
 
 int main(int argc, char **argv) {

@@ -17,6 +17,7 @@ public:
   bool intersections(const Ray &ray);
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
   [[nodiscard]] Vector local_normal_at(const Point &local_point);
+  static std::shared_ptr<Sphere> Glass_sphere();
 };
 } // namespace TJRayTracer
 

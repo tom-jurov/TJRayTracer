@@ -14,7 +14,7 @@ public:
   Material();
   Material(const Color &color, double ambient, double diffuse, double specular,
            double shininess, const std::shared_ptr<BasePattern> pattern,
-           double reflective);
+           double reflective, double transparency, double refractive_index);
   ~Material() = default;
   Material(Material &&) = default;
   Material &operator=(Material &&) = default;
@@ -31,6 +31,8 @@ public:
   double shininess;
   std::shared_ptr<BasePattern> pattern;
   double reflective;
+  double transparency;
+  double refractive_index;
 };
 } // namespace TJRayTracer
 

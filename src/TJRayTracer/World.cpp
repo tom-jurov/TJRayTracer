@@ -8,7 +8,7 @@ void TJRayTracer::World::default_world() {
   TJRayTracer::PointLight light(Point(-10, 10, -10), Color(1, 1, 1));
   std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();
   s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
-                                            200, nullptr, 0.0);
+                                            200, nullptr, 0.0, 0.0, 1.0);
   std::unique_ptr<BaseObject> s2 =
       std::make_unique<TJRayTracer::Sphere>(TF::scaling(0.5, 0.5, 0.5));
   objects.clear();
@@ -39,6 +39,7 @@ TJRayTracer::World::shade_hit(const TJRayTracer::Comps &comps,
                               unsigned int remaining) {
   TJRayTracer::Color surface;
   TJRayTracer::Color reflected;
+  TJRayTracer::Color refracted;
   for (auto &light : light_sources) {
     bool shadowed = this->is_shadowed(comps.over_point);
     surface =
@@ -46,8 +47,9 @@ TJRayTracer::World::shade_hit(const TJRayTracer::Comps &comps,
                       comps.object->material, comps.object, light,
                       comps.over_point, comps.eyev, comps.normalv, shadowed);
     reflected = this->reflected_color(comps, remaining);
+    refracted = this->refracted_color(comps, remaining);
   }
-  return surface + reflected;
+  return surface + reflected + refracted;
 }
 
 TJRayTracer::Color TJRayTracer::World::color_at(const TJRayTracer::Ray &ray,
@@ -56,7 +58,8 @@ TJRayTracer::Color TJRayTracer::World::color_at(const TJRayTracer::Ray &ray,
   if (intersections.size() != 0) {
     for (auto &intersection : intersections) {
       if (intersection.t >= 0) {
-        auto comps = Comps::prepare_computations(intersection, ray);
+        auto comps =
+            Comps::prepare_computations(intersection, ray, intersections);
         return this->shade_hit(comps, remaining);
       }
     }
@@ -86,4 +89,24 @@ TJRayTracer::Color TJRayTracer::World::reflected_color(const Comps &comps,
   Ray reflect_ray = Ray(comps.over_point, comps.reflectv);
   Color color = this->color_at(reflect_ray, remaining - 1);
   return (color * comps.object->material->reflective);
+}
+
+TJRayTracer::Color
+TJRayTracer::World::refracted_color(const TJRayTracer::Comps &comps,
+                                    unsigned int remaining) {
+  if (equal(comps.object->material->transparency, 0) || (remaining <= 0)) {
+    return Color(0, 0, 0);
+  }
+  double n_ratio = comps.n1 / comps.n2;
+  double cos_i = Vector::dot(comps.eyev, comps.normalv);
+  double sin2_t = n_ratio * n_ratio * (1 - cos_i * cos_i);
+  if (sin2_t > 1) {
+    return Color(0, 0, 0);
+  }
+  double cos_t = sqrt(1.0 - sin2_t);
+  Vector direction =
+      comps.normalv * (n_ratio * cos_i - cos_t) - comps.eyev * n_ratio;
+  Ray refract_ray(comps.under_point, direction);
+  return this->color_at(refract_ray, remaining - 1) *
+         comps.object->material->transparency;
 }

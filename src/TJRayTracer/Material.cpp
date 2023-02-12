@@ -6,9 +6,10 @@
 TJRayTracer::Material::Material(
     const Color &color, double ambient, double diffuse, double specular,
     double shininess, const std::shared_ptr<BasePattern> strippedPattern,
-    double reflective)
+    double reflective, double transparency, double refractive_index)
     : color(color), ambient(ambient), diffuse(diffuse), specular(specular),
-      shininess(shininess), pattern(strippedPattern), reflective(reflective) {}
+      shininess(shininess), pattern(strippedPattern), reflective(reflective),
+      transparency(transparency), refractive_index(refractive_index) {}
 
 TJRayTracer::Material::Material() {
   color = Color(1, 1, 1);
@@ -18,7 +19,10 @@ TJRayTracer::Material::Material() {
   shininess = 200.0;
   pattern = nullptr;
   reflective = 0.0;
+  transparency = 0.0;
+  refractive_index = 1.0;
 }
+
 namespace TJRayTracer {
 bool operator==(const std::shared_ptr<TJRayTracer::Material> &lhs,
                 const std::shared_ptr<TJRayTracer::Material> &rhs) {

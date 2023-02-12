@@ -34,3 +34,11 @@ TJRayTracer::Sphere::local_normal_at(const TJRayTracer::Point &local_point) {
   Vector local_normal = local_point - Point(0, 0, 0);
   return local_normal;
 }
+
+std::shared_ptr<TJRayTracer::Sphere> TJRayTracer::Sphere::Glass_sphere() {
+  auto sphere = std::make_shared<Sphere>();
+  sphere->SetTransform(TF::identity());
+  sphere->material->transparency = 1.0;
+  sphere->material->refractive_index = 1.5;
+  return sphere;
+}

@@ -4,9 +4,13 @@
 
 #include "Comps.h"
 #include "Equal.h"
+#include <algorithm>
 TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
-    const TJRayTracer::Intersection &intersection,
-    const TJRayTracer::Ray &ray) {
+    const TJRayTracer::Intersection &intersection, const TJRayTracer::Ray &ray,
+    std::vector<TJRayTracer::Intersection> intersections) {
+  if (intersections.size() == 0) {
+    intersections.push_back(intersection);
+  }
   TJRayTracer::Comps result;
   result.t = intersection.t;
   result.object = intersection.object;
@@ -21,7 +25,37 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
     result.inside = false;
   }
   result.over_point = result.point + result.normalv * EPSILON;
+  result.under_point = result.point - result.normalv * EPSILON;
   result.reflectv = Vector::reflect(ray.GetDirection(), result.normalv);
+
+  std::vector<std::shared_ptr<BaseObject>> containers;
+  for (auto &inter : intersections) {
+    if (inter == intersection) {
+      if (containers.size() == 0) {
+        result.n1 = 1.0;
+      } else {
+        result.n1 = containers.back()->material->refractive_index;
+      }
+    }
+    bool flag = true;
+    for (auto it = containers.begin(); it != containers.end(); ++it) {
+      if (*it == inter.object) {
+        containers.erase(it);
+        flag = false;
+        break;
+      }
+    }
+    if (flag) {
+      containers.push_back(inter.object);
+    }
+    if (inter == intersection) {
+      if (containers.size() == 0) {
+        result.n2 = 1.0;
+      } else {
+        result.n2 = containers.back()->material->refractive_index;
+      }
+    }
+  }
 
   return result;
 }
