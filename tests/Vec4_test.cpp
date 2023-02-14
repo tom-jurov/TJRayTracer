@@ -22,6 +22,7 @@
 #include "../src/TJRayTracer/Vector.h"
 #include "../src/TJRayTracer/World.h"
 #include "../src/TJRayTracer/Cube.h"
+#include "../src/TJRayTracer/Cylinder.h"
 #include <gtest/gtest.h>
 
 TEST(TupleTest, PointUsingBaseClass) {
@@ -2104,6 +2105,79 @@ TEST(Chapter12, NormalsOnCube)
   {    
     auto normal = c->local_normal_at(points[i]);
     ASSERT_EQ(normal,normals[i]);
+  }
+}
+
+TEST(Chapter13, RaysMissCylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cyl = std::make_shared<Cylinder>();
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  origins.push_back(Point(1 , 0, 0));
+  origins.push_back(Point(0 , 0, 0));
+  origins.push_back(Point(0 , 0, -5));
+  directions.push_back(Vector(0 ,1, 0));
+  directions.push_back(Vector(0 ,1, 0));
+  directions.push_back(Vector(1 , 1, 1));
+  for (int i = 0; i < 3; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(origins[i], direction);
+    auto xs = cyl->local_intersect(r);
+    ASSERT_EQ(xs.size(),0);
+  }
+}
+
+TEST(Chapter13, RaysHitCylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cyl = std::make_shared<Cylinder>();
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  std::vector<double> t0;
+  std::vector<double> t1;
+  t0.push_back(5);
+  t0.push_back(4);
+  t0.push_back(6.80798);
+  t1.push_back(5);
+  t1.push_back(6);
+  t1.push_back(7.08872);
+  origins.push_back(Point(1 , 0, -5));
+  origins.push_back(Point(0 , 0, -5));
+  origins.push_back(Point(0.5 , 0, -5));
+  directions.push_back(Vector(0 ,0, 1));
+  directions.push_back(Vector(0 ,0, 1));
+  directions.push_back(Vector(0.1 , 1, 1));
+  for (int i = 0; i < 3; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(origins[i], direction);
+    auto xs = cyl->local_intersect(r);
+    ASSERT_EQ(xs.size(),2);
+    ASSERT_EQ(equal(xs[0].t, t0[i]), true);
+    ASSERT_EQ(equal(xs[1].t, t1[i]), true);
+  }
+}
+
+TEST(Chapter13, NormalsOfCylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cyl = std::make_shared<Cylinder>();
+  std::vector<Point> points;
+  std::vector<Vector> normals;
+  points.push_back(Point(1 , 0, 0));
+  points.push_back(Point(0 , 5, -1));
+  points.push_back(Point(0 , -2, 1));
+  points.push_back(Point(-1 , 1, 0));
+  normals.push_back(Vector(1 ,0, 0));
+  normals.push_back(Vector(0 ,0, -1));
+  normals.push_back(Vector(0 , 0, 1));
+  normals.push_back(Vector(-1 , 0, 0));
+  for (int i = 0; i < 4; ++i)
+  {    
+    auto n = cyl->local_normal_at(points[i]);
+    ASSERT_EQ(n,normals[i]);
   }
 }
 
