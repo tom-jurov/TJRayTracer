@@ -21,6 +21,7 @@
 #include "../src/TJRayTracer/Vec4.h"
 #include "../src/TJRayTracer/Vector.h"
 #include "../src/TJRayTracer/World.h"
+#include "../src/TJRayTracer/Cube.h"
 #include <gtest/gtest.h>
 
 TEST(TupleTest, PointUsingBaseClass) {
@@ -2003,6 +2004,107 @@ TEST(Eleventh, shade_hitWithAReflectiveTransparentMaterial) {
   auto comps = Comps::prepare_computations(xs[0], r, xs);
   Color color = w.shade_hit(comps, 5);
   ASSERT_EQ(color, Color(0.93391, 0.69643, 0.69243));
+}
+
+TEST(Chapter12, CubeIntersections)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> c = std::make_shared<Cube>();
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  std::vector<double> p1;
+  std::vector<double> p2;
+  origins.push_back(Point(5 ,0.5, 0));
+  origins.push_back(Point(-5 ,0.5, 0));
+  origins.push_back(Point(0.5 ,5, 0));
+  origins.push_back(Point(0.5 ,-5, 0));
+  origins.push_back(Point(0.5 ,0, 5));
+  origins.push_back(Point(0.5 ,0, -5));
+  origins.push_back(Point(0 ,0.5, 0));
+  directions.push_back(Vector(-1 ,0, 0));
+  directions.push_back(Vector(1 ,0, 0));
+  directions.push_back(Vector(0 ,-1, 0));
+  directions.push_back(Vector(0 ,1, 0));
+  directions.push_back(Vector(0 ,0, -1));
+  directions.push_back(Vector(0 ,0, 1));
+  directions.push_back(Vector(0 ,0, 1));
+  p1.push_back(4);
+  p1.push_back(4);
+  p1.push_back(4);
+  p1.push_back(4);
+  p1.push_back(4);
+  p1.push_back(4);
+  p1.push_back(-1);
+  p2.push_back(6);
+  p2.push_back(6);
+  p2.push_back(6);
+  p2.push_back(6);
+  p2.push_back(6);
+  p2.push_back(6);
+  p2.push_back(1);
+  for (int i = 0; i < 7; ++i)
+  {    
+    Ray r(origins[i],directions[i]);
+    auto xs = c->local_intersect(r);
+    ASSERT_EQ(xs.size(),2);
+    ASSERT_EQ(equal(xs[0].t,p1[i]),true);
+    ASSERT_EQ(equal(xs[1].t,p2[i]),true);
+  }
+}
+
+TEST(Chapter12, RayMissesCube)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> c = std::make_shared<Cube>();
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  origins.push_back(Point(-2 ,0 , 0));
+  origins.push_back(Point(0 , -2, 0));
+  origins.push_back(Point(0 , 0, -2));
+  origins.push_back(Point(2 ,0 , 2));
+  origins.push_back(Point(0 ,2, 2));
+  origins.push_back(Point(2 ,2, 0));
+  directions.push_back(Vector(0.2673 ,0.5345, 0.8018));
+  directions.push_back(Vector(0.8018 ,0.2673, 0.5345));
+  directions.push_back(Vector(0.5345 ,0.8018, 0.2673));
+  directions.push_back(Vector(0 ,0, -1));
+  directions.push_back(Vector(0 ,-1, 0));
+  directions.push_back(Vector(-1 ,0, 0));
+  for (int i = 0; i < 6; ++i)
+  {    
+    Ray r(origins[i],directions[i]);
+    auto xs = c->local_intersect(r);
+    ASSERT_EQ(xs.size(),0);
+  }
+}
+
+TEST(Chapter12, NormalsOnCube)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> c = std::make_shared<Cube>();
+  std::vector<Point> points;
+  std::vector<Vector> normals;
+  points.push_back(Point(1 ,0.5 , -0.8));
+  points.push_back(Point(-1 , -0.2, 0.9));
+  points.push_back(Point(-0.4 , 1, -0.1));
+  points.push_back(Point(0.3 ,-1 , -0.7));
+  points.push_back(Point(-0.6 ,0.3, 1));
+  points.push_back(Point(0.4 ,0.4, -1));
+  points.push_back(Point(1 ,1, 1));
+  points.push_back(Point(-1 ,-1, -1));
+  normals.push_back(Vector(1 ,0, 0));
+  normals.push_back(Vector(-1 ,0, 0));
+  normals.push_back(Vector(0 , 1, 0));
+  normals.push_back(Vector(0 ,-1, 0));
+  normals.push_back(Vector(0 ,0, 1));
+  normals.push_back(Vector(0 ,0, -1));
+  normals.push_back(Vector(1 ,0, 0));
+  normals.push_back(Vector(-1 ,0, 0));
+  for (int i = 0; i < 8; ++i)
+  {    
+    auto normal = c->local_normal_at(points[i]);
+    ASSERT_EQ(normal,normals[i]);
+  }
 }
 
 int main(int argc, char **argv) {

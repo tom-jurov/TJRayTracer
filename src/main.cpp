@@ -16,6 +16,7 @@
 #include "TJRayTracer/Vec4.h"
 #include "TJRayTracer/Vector.h"
 #include "TJRayTracer/World.h"
+#include "TJRayTracer/Cube.h"
 #include <iostream>
 #include <vector>
 
@@ -66,8 +67,8 @@ int main() {
           TJRayTracer::Color(1, 253 / (double)255, 15 / double(255)));
   gradient->SetTransform(TJRayTracer::TF::rotation_y(M_PI / 2.3));
   std::shared_ptr<TJRayTracer::BaseObject> middle =
-      std::make_shared<TJRayTracer::Sphere>();
-  middle->SetTransform(TJRayTracer::TF::translation(-0.5, 1, 0.5));
+      std::make_shared<TJRayTracer::Cube>();
+  middle->SetTransform(TJRayTracer::TF::translation(-0.5, 1, 0.5)*TJRayTracer::TF::rotation_y(M_PI/6));
   middle->material = std::make_shared<TJRayTracer::Material>();
   middle->material->pattern = gradient;
   middle->material->color = TJRayTracer::Color(0.1, 1, 0.5);
