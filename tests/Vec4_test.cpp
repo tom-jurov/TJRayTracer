@@ -23,6 +23,7 @@
 #include "../src/TJRayTracer/World.h"
 #include "../src/TJRayTracer/Cube.h"
 #include "../src/TJRayTracer/Cylinder.h"
+#include "../src/TJRayTracer/Cones.h"
 #include <gtest/gtest.h>
 
 TEST(TupleTest, PointUsingBaseClass) {
@@ -2177,6 +2178,209 @@ TEST(Chapter13, NormalsOfCylinder)
   for (int i = 0; i < 4; ++i)
   {    
     auto n = cyl->local_normal_at(points[i]);
+    ASSERT_EQ(n,normals[i]);
+  }
+}
+
+TEST(Chapter13, CylinderBounds)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<Cylinder> cyl = std::make_shared<Cylinder>();
+  ASSERT_EQ(cyl->GetMinimum(),-INFINITY);
+  ASSERT_EQ(cyl->GetMaximum(),INFINITY);
+}
+
+TEST(Chapter13, IntersectingAConstrainedCylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cyl = std::make_shared<Cylinder>();
+  dynamic_cast<Cylinder*>(cyl.get())->SetMinimum(1);
+  dynamic_cast<Cylinder*>(cyl.get())->SetMaximum(2);
+  std::vector<Point> points;
+  std::vector<Vector> directions;
+  std::vector<int> counts;
+  points.push_back(Point(0 , 1.5, 0));
+  points.push_back(Point(0 , 3, -5));
+  points.push_back(Point(0 , 0, -5));
+  points.push_back(Point(0 , 2, -5));
+  points.push_back(Point(0 , 1, -5));
+  points.push_back(Point(0 , 1.5, -2));
+  directions.push_back(Vector(0.1 ,1, 0));
+  directions.push_back(Vector(0 ,0, 1));
+  directions.push_back(Vector(0 , 0, 1));
+  directions.push_back(Vector(0 , 0, 1));
+  directions.push_back(Vector(0 , 0, 1));
+  directions.push_back(Vector(0 , 0, 1));
+  counts.push_back(0);
+  counts.push_back(0);
+  counts.push_back(0);
+  counts.push_back(0);
+  counts.push_back(0);
+  counts.push_back(2);
+  for (int i = 0; i < 6; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(points[i], direction);
+    auto xs = cyl->local_intersect(r);
+    ASSERT_EQ(xs.size(), counts[i]);
+  }
+}
+
+TEST(Chapter13, TheDefaultClosedValueForACylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cyl = std::make_shared<Cylinder>();
+  bool closed = dynamic_cast<Cylinder*>(cyl.get())->IsClosed();
+  ASSERT_EQ(closed,false);
+}
+
+TEST(Chapter13, IntersectingTheCapsOfAClosedCylinder)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<Cylinder> cyl = std::make_shared<Cylinder>();
+  cyl->SetMinimum(1);
+  cyl->SetMaximum(2);
+  cyl->SetClosed(true);
+  std::vector<Point> points;
+  std::vector<Vector> directions;
+  std::vector<int> counts;
+  points.push_back(Point(0 , 3, 0));
+  points.push_back(Point(0 , 3, -2));
+  points.push_back(Point(0 , 4, -2));
+  points.push_back(Point(0 , 0, -2));
+  points.push_back(Point(0 , -1, -2));
+  directions.push_back(Vector(0 , -1, 0));
+  directions.push_back(Vector(0 , -1, 2));
+  directions.push_back(Vector(0 , -1, 1));
+  directions.push_back(Vector(0 , 1, 2));
+  directions.push_back(Vector(0 , 1, 1));
+  counts.push_back(2);
+  counts.push_back(2);
+  counts.push_back(2);
+  counts.push_back(2);
+  counts.push_back(2);
+  for (int i = 0; i < 5; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(points[i], direction);
+    auto xs = cyl->local_intersect(r);
+    ASSERT_EQ(xs.size(), counts[i]);
+  }
+}
+
+TEST(Chapter13, TheNormalVectorOnACylindersEndCaps)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<Cylinder> cyl = std::make_shared<Cylinder>();
+  cyl->SetMinimum(1);
+  cyl->SetMaximum(2);
+  cyl->SetClosed(true);
+  std::vector<Point> points;
+  std::vector<Vector> normals;
+  points.push_back(Point(0 , 1, 0));
+  points.push_back(Point(0.5 , 1, 0));
+  points.push_back(Point(0 , 1, 0.5));
+  points.push_back(Point(0 , 2, 0));
+  points.push_back(Point(0.5 , 2, 0));
+  points.push_back(Point(0 , 2, 0.5));
+  normals.push_back(Vector(0 , -1, 0));
+  normals.push_back(Vector(0 , -1, 0));
+  normals.push_back(Vector(0 , -1, 0));
+  normals.push_back(Vector(0 , 1, 0));
+  normals.push_back(Vector(0 , 1, 0));
+  normals.push_back(Vector(0 , 1, 0));
+  for (int i = 0; i < 6; ++i)
+  {    
+    Vector normal = cyl->local_normal_at(points[i]);
+    ASSERT_EQ(normal, normals[i]);
+  }
+}
+
+TEST(Chapter13, RaysHitCones)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cones = std::make_shared<Cones>();
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  std::vector<double> t0;
+  std::vector<double> t1;
+  t0.push_back(5);
+  t0.push_back(8.66025);
+  t0.push_back(4.55006);
+  t1.push_back(5);
+  t1.push_back(8.66025);
+  t1.push_back(49.44994);
+  origins.push_back(Point(0 , 0, -5));
+  origins.push_back(Point(0 , 0, -5));
+  origins.push_back(Point(1 , 1, -5));
+  directions.push_back(Vector(0 ,0, 1));
+  directions.push_back(Vector(1 ,1, 1));
+  directions.push_back(Vector(-0.5 , -1, 1));
+  for (int i = 0; i < 3; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(origins[i], direction);
+    auto xs = cones->local_intersect(r);
+    ASSERT_EQ(xs.size(),2);
+    ASSERT_EQ(equal(xs[0].t, t0[i]), true);
+    ASSERT_EQ(equal(xs[1].t, t1[i]), true);
+  }
+}
+
+TEST(Chapter13, IntersectingAConeWithARayParallelToOneOfItsHalves)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<BaseObject> cones = std::make_shared<Cones>();
+  Vector direction = Vector(0,1,1).normalize();
+  Ray r(Point(0,0,-1), direction);
+  auto xs = cones->local_intersect(r);
+  ASSERT_EQ(xs.size(), 1);
+  ASSERT_EQ(equal(xs[0].t,0.35355),true);
+}
+
+TEST(Chapter13, IntersectingAConesEndCaps)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<Cones> cones = std::make_shared<Cones>();
+  cones->SetMinimum(-0.5);
+  cones->SetMaximum(0.5);
+  cones->SetClosed(true);
+  std::vector<Point> origins;
+  std::vector<Vector> directions;
+  std::vector<int> counts;
+  counts.push_back(0);
+  counts.push_back(2);
+  counts.push_back(4);
+  origins.push_back(Point(0 , 0, -5));
+  origins.push_back(Point(0 , 0, -0.25));
+  origins.push_back(Point(0 , 0, -0.25));
+  directions.push_back(Vector(0 ,1, 0));
+  directions.push_back(Vector(0 ,1, 1));
+  directions.push_back(Vector(0 , 1, 0));
+  for (int i = 0; i < 3; ++i)
+  {    
+    auto direction = directions[i].normalize();
+    Ray r(origins[i], direction);
+    auto xs = cones->local_intersect(r);
+    ASSERT_EQ(xs.size(),counts[i]);
+  }
+}
+
+TEST(Chapter13, ComputingTheNormalVectorOnACone)
+{
+  using namespace TJRayTracer;
+  std::shared_ptr<Cones> shape = std::make_shared<Cones>();
+  std::vector<Point> points;
+  std::vector<Vector> normals;
+  points.push_back(Point(0 , 0, 0));
+  points.push_back(Point(1 , 1, 1));
+  points.push_back(Point(-1 , -1, 0));
+  normals.push_back(Vector(0 ,0, 0));
+  normals.push_back(Vector(1 ,-sqrt(2), 1));
+  normals.push_back(Vector(-1 , 1, 0));
+  for (int i = 0; i < 3; ++i)
+  {    
+    auto n = shape->local_normal_at(points[i]);
     ASSERT_EQ(n,normals[i]);
   }
 }

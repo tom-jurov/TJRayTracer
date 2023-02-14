@@ -1,18 +1,19 @@
-#ifndef TJRAYTRACER_CYLINDER_H
-#define TJRAYTRACER_CYLINDER_H
+#ifndef TJRAYTRACER_CONES_H
+#define TJRAYTRACER_CONES_H
+
 #include "BaseObject.h"
 #include "Ray.h"
 #include "Vector.h"
 #include <cmath>
 namespace TJRayTracer {
-class Cylinder : public BaseObject {
+class Cones : public BaseObject {
 public:
-  Cylinder();
-  Cylinder(const MatrixXd<double, 4, 4> &transform);
-  ~Cylinder();
+  Cones();
+  Cones(const MatrixXd<double, 4, 4> &transform);
+  ~Cones();
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
   [[nodiscard]] Vector local_normal_at(const Point &local_point);
-  static std::shared_ptr<Cylinder> Glass_cylinder();
+  static std::shared_ptr<Cones> Glass_cones();
   void SetMaximum(double maximum);
   void SetMinimum(double minimum);
   double GetMaximum() const;
@@ -28,5 +29,4 @@ private:
     bool _closed;
 };
 } // namespace TJRayTracer
-
 #endif
