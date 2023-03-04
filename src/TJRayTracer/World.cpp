@@ -4,6 +4,7 @@
 #include "World.h"
 #include "Equal.h"
 #include "Sphere.h"
+#include <algorithm>
 void TJRayTracer::World::default_world() {
   TJRayTracer::PointLight light(Point(-10, 10, -10), Color(1, 1, 1));
   std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();

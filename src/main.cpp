@@ -21,6 +21,12 @@
 #include <iostream>
 #include <vector>
 
+#ifdef _WIN32
+#define M_PI 3.14159265358979323846
+#define M_PI_4 3.14159265358979323846/4
+#define M_PI_2 3.14159265358979323846/2
+#endif
+
 int main() {
   std::shared_ptr<TJRayTracer::BasePattern> pattern =
       std::make_shared<TJRayTracer::CheckersPattern>(
