@@ -25,7 +25,7 @@ public:
                                      unsigned int remaining = 5);
   TJRayTracer::Color refracted_color(const Comps &comps,
                                      unsigned int remaining = 5);
-  bool is_shadowed(const Point &point);
+  bool is_shadowed(const Vector4d &point);
 
 public:
   std::vector<std::shared_ptr<BaseObject>> objects;

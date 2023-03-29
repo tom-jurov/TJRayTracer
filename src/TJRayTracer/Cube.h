@@ -4,14 +4,13 @@
 
 #include "BaseObject.h"
 #include "Ray.h"
-#include "Vector.h"
 #include "Intersection.h"
 #include <cmath>
 namespace TJRayTracer {
 class Cube : public BaseObject {
 public:
   Cube();
-  Cube(const MatrixXd<double, 4, 4> &transform);
+  Cube(const Matrix4d &transform);
   ~Cube();
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
   [[nodiscard]] Vector local_normal_at(const Point &local_point);

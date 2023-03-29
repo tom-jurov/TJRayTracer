@@ -2,7 +2,7 @@
 #include "Equal.h"
 TJRayTracer::Cylinder::Cylinder() : BaseObject(),_minimum(-INFINITY), _maximum(INFINITY), _closed(false) {}
 TJRayTracer::Cylinder::Cylinder(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform)
+    const TJRayTracer::Matrix4d &transform)
     : BaseObject(transform) {}
 TJRayTracer::Cylinder::~Cylinder() noexcept {}
 
@@ -66,7 +66,7 @@ TJRayTracer::Cylinder::local_normal_at(const TJRayTracer::Point &local_point) {
 
 std::shared_ptr<TJRayTracer::Cylinder> TJRayTracer::Cylinder::Glass_cylinder() {
   auto cylinder = std::make_shared<Cylinder>();
-  cylinder->SetTransform(TF::identity());
+  cylinder->SetTransform(TF::Identity());
   cylinder->material->transparency = 1.0;
   cylinder->material->refractive_index = 1.5;
   return cylinder;

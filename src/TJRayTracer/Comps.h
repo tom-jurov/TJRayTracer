@@ -5,8 +5,6 @@
 #ifndef TJRAYTRACER_COMPS_H
 #define TJRAYTRACER_COMPS_H
 #include "BaseObject.h"
-#include "Point.h"
-#include "Vector.h"
 namespace TJRayTracer {
 class Comps {
 public:

@@ -5,7 +5,6 @@
 #ifndef TJRAYTRACER_CAMERA_H
 #define TJRAYTRACER_CAMERA_H
 #include "Canvas.h"
-#include "MatrixXd.h"
 #include "Ray.h"
 #include "TF.h"
 #include "World.h"
@@ -22,7 +21,7 @@ public:
   int hsize;
   int vsize;
   double fov;
-  MatrixXd<double, 4, 4> tf = TF::identity();
+  Matrix4d tf = TF::Identity();
   double pixel_size;
   double half_width;
   double half_height;

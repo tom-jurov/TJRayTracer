@@ -6,8 +6,6 @@
 #define TJRAYTRACER_POINTLIGHT_H
 #include "Color.h"
 #include "Material.h"
-#include "Point.h"
-#include "Vector.h"
 #include <memory>
 
 namespace TJRayTracer {

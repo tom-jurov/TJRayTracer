@@ -4,11 +4,11 @@
 
 #include "BaseObject.h"
 TJRayTracer::BaseObject::BaseObject()
-    : _transform(TJRayTracer::TF::identity()) {
+    : _transform(TJRayTracer::TF::Identity()) {
   material = std::make_shared<Material>();
 }
 TJRayTracer::BaseObject::BaseObject(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform)
+    const TJRayTracer::Matrix4d &transform)
     : BaseObject() {
   _transform = transform;
 }
@@ -31,24 +31,24 @@ TJRayTracer::Intersection TJRayTracer::BaseObject::hit(
 }
 
 void TJRayTracer::BaseObject::SetTransform(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform) {
+    const TJRayTracer::Matrix4d &transform) {
   _transform = transform;
 }
 
-TJRayTracer::MatrixXd<double, 4, 4>
+TJRayTracer::Matrix4d
 TJRayTracer::BaseObject::GetTransform() const {
   return _transform;
 }
 
-TJRayTracer::Vector
-TJRayTracer::BaseObject::normal_at(const TJRayTracer::Point &point) {
-  Point local_point = (_transform.inverse()) * point;
-  Vector local_normal = std::move(this->local_normal_at(local_point));
-  auto world_transform = this->GetTransform().inverse();
-  world_transform.transpose();
-  auto world_normal = world_transform * local_normal;
-  world_normal.w = 0;
-  return world_normal.normalize();
+TJRayTracer::Vector4d
+TJRayTracer::BaseObject::normal_at(const TJRayTracer::Vector4d &point) {
+  Vector4d local_point = (_transform.inverse()) * point;
+  Vector4d local_normal = std::move(this->local_normal_at(local_point));
+  Vector4d world_transform = this->GetTransform().inverse();
+  world_transform.transposeInPlace();
+  Vector4d world_normal = world_transform * local_normal;
+  world_normal(3) = 0;
+  return world_normal.normalized();
 }
 
 namespace TJRayTracer {

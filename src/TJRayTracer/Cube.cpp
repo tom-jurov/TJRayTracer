@@ -2,7 +2,7 @@
 #include "Equal.h"
 TJRayTracer::Cube::Cube() : BaseObject() {}
 TJRayTracer::Cube::Cube(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform)
+    const TJRayTracer::Matrix4d &transform)
     : BaseObject(transform) {}
 TJRayTracer::Cube::~Cube() noexcept {}
 
@@ -23,20 +23,20 @@ TJRayTracer::Cube::local_intersect(const Ray &local_ray) {
     return {Intersection(tmin, std::make_shared<Cube>(*this)), Intersection(tmax, std::make_shared<Cube>(*this))};   
 }
 
-TJRayTracer::Vector
-TJRayTracer::Cube::local_normal_at(const TJRayTracer::Point &local_point) {
-    double maxc = std::max({fabs(local_point.x), fabs(local_point.y), fabs(local_point.z)});
+TJRayTracer::Vector4d
+TJRayTracer::Cube::local_normal_at(const TJRayTracer::Vector4d &local_point) {
+    double maxc = std::max({fabs(local_point.x()), fabs(local_point.y()), fabs(local_point.z())});
 
-    if (equal(maxc, fabs(local_point.x)))
+    if (equal(maxc, fabs(local_point.x())))
     {
-        return Vector(local_point.x, 0, 0);
+        return Vector(local_point.x(), 0, 0, 0);
     }
     else if (equal(maxc, fabs(local_point.y)))
     {
-        return Vector(0, local_point.y, 0);
+        return Vector(0, local_point.y(), 0, 0);
     }
 
-    return Vector(0, 0, local_point.z);
+    return Vector(0, 0, local_point.z(), 0);
 }
 
 std::vector<double> TJRayTracer::Cube::check_axis(double origin, double direction)
@@ -66,7 +66,7 @@ std::vector<double> TJRayTracer::Cube::check_axis(double origin, double directio
 
 std::shared_ptr<TJRayTracer::Cube> TJRayTracer::Cube::Glass_cube() {
   auto cube = std::make_shared<Cube>();
-  cube->SetTransform(TF::identity());
+  cube->SetTransform(TF::Identity());
   cube->material->transparency = 1.0;
   cube->material->refractive_index = 1.5;
   return cube;

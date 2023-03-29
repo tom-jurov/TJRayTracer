@@ -3,16 +3,15 @@
 
 #include "BaseObject.h"
 #include "Ray.h"
-#include "Vector.h"
 #include <cmath>
 namespace TJRayTracer {
 class Cones : public BaseObject {
 public:
   Cones();
-  Cones(const MatrixXd<double, 4, 4> &transform);
+  Cones(const Matrix4d &transform);
   ~Cones();
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
-  [[nodiscard]] Vector local_normal_at(const Point &local_point);
+  [[nodiscard]] Vector4d local_normal_at(const Vector4d &local_point);
   static std::shared_ptr<Cones> Glass_cones();
   void SetMaximum(double maximum);
   void SetMinimum(double minimum);

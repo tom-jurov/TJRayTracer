@@ -6,7 +6,6 @@
 #define TJRAYTRACER_GRADIENTPATTERN_H
 
 #include "BasePattern.h"
-#include "Point.h"
 namespace TJRayTracer {
 class GradientPattern : public BasePattern {
 public:

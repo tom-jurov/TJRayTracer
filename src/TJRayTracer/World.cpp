@@ -74,7 +74,7 @@ TJRayTracer::Color TJRayTracer::World::color_at(const TJRayTracer::Ray &ray,
   return Color(0, 0, 0);
 }
 
-bool TJRayTracer::World::is_shadowed(const Point &point) {
+bool TJRayTracer::World::is_shadowed(const Vector4d &point) {
   auto v = this->light_sources[0].GetPosition() - point;
   double distance = Vector::magnitude(v);
   Vector direction = v.normalize();

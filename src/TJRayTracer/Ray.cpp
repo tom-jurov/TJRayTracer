@@ -5,31 +5,31 @@
 #include "Ray.h"
 
 TJRayTracer::Ray::Ray()
-    : _origin(Point(0, 0, 0)), _direction(Vector(0, 0, 0)) {}
-TJRayTracer::Ray::Ray(const Point &origin, const Vector &direction)
+    : _origin(Vector4d(0, 0, 0, 1)), _direction(Vector4d(0, 0, 0, 0)) {}
+TJRayTracer::Ray::Ray(const Vector4d &origin, const Vector4d &direction)
     : _origin(origin), _direction(direction) {}
 
-const TJRayTracer::Point &TJRayTracer::Ray::GetOrigin() const {
+const TJRayTracer::Vector4d &TJRayTracer::Ray::GetOrigin() const {
   return _origin;
 }
-const TJRayTracer::Vector &TJRayTracer::Ray::GetDirection() const {
+const TJRayTracer::Vector4d &TJRayTracer::Ray::GetDirection() const {
   return _direction;
 }
 
-TJRayTracer::Point TJRayTracer::Ray::position(double t) const {
+TJRayTracer::Vector4d TJRayTracer::Ray::position(double t) const {
   return _origin + t * _direction;
 }
 
 TJRayTracer::Ray TJRayTracer::Ray::transform(
-    const TJRayTracer::MatrixXd<double, 4, 4> &tf) const {
+    const TJRayTracer::Matrix4d &tf) const {
   TJRayTracer::Ray result;
   result.SetOrigin(tf * this->GetOrigin());
   result.SetDirection(tf * this->GetDirection());
   return result;
 }
 
-void TJRayTracer::Ray::SetOrigin(const TJRayTracer::Point &p) { _origin = p; }
+void TJRayTracer::Ray::SetOrigin(const TJRayTracer::Vector4d &p) { _origin = p; }
 
-void TJRayTracer::Ray::SetDirection(const TJRayTracer::Vector &v) {
+void TJRayTracer::Ray::SetDirection(const TJRayTracer::Vector4d &v) {
   _direction = v;
 }

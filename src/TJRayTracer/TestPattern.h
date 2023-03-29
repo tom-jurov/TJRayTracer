@@ -6,7 +6,6 @@
 #define TJRAYTRACER_TESTPATTERN_H
 
 #include "BasePattern.h"
-#include "Point.h"
 namespace TJRayTracer {
 class TestPattern : public BasePattern {
 public:

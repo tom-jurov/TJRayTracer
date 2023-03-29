@@ -2,17 +2,17 @@
 #include "Equal.h"
 TJRayTracer::Cones::Cones() : BaseObject(),_minimum(-INFINITY), _maximum(INFINITY), _closed(false) {}
 TJRayTracer::Cones::Cones(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform)
+    const TJRayTracer::Matrix4d &transform)
     : BaseObject(transform) {}
 TJRayTracer::Cones::~Cones() noexcept {}
 
 std::vector<TJRayTracer::Intersection>
 TJRayTracer::Cones::local_intersect(const Ray &local_ray) {
-    double a = pow(local_ray.GetDirection().x, 2) - pow(local_ray.GetDirection().y, 2) + pow(local_ray.GetDirection().z, 2);
-    double b = 2 * local_ray.GetOrigin().x * local_ray.GetDirection().x -
-            2 * local_ray.GetOrigin().y * local_ray.GetDirection().y +
-            2 * local_ray.GetOrigin().z * local_ray.GetDirection().z;
-    double c = pow(local_ray.GetOrigin().x, 2)  - pow(local_ray.GetOrigin().y, 2) + pow(local_ray.GetOrigin().z, 2);
+    double a = pow(local_ray.GetDirection().x(), 2) - pow(local_ray.GetDirection().y(), 2) + pow(local_ray.GetDirection().z(), 2);
+    double b = 2 * local_ray.GetOrigin().x() * local_ray.GetDirection().x() -
+            2 * local_ray.GetOrigin().y() * local_ray.GetDirection().y() +
+            2 * local_ray.GetOrigin().z() * local_ray.GetDirection().z();
+    double c = pow(local_ray.GetOrigin().x(), 2)  - pow(local_ray.GetOrigin().y(), 2) + pow(local_ray.GetOrigin().z(), 2);
     std::vector<Intersection> xs;
     if (equal(a,0) && !equal(b,0))
     {
@@ -35,13 +35,13 @@ TJRayTracer::Cones::local_intersect(const Ray &local_ray) {
             std::swap(t0, t1);
         }
 
-        double y0 = local_ray.GetOrigin().y + t0 * local_ray.GetDirection().y;
+        double y0 = local_ray.GetOrigin().y() + t0 * local_ray.GetDirection().y();
         if (_minimum < y0 && y0 < _maximum)
         {
             xs.push_back(Intersection(t0, std::make_shared<Cones>(*this)));
         }
 
-        double y1 = local_ray.GetOrigin().y + t1 * local_ray.GetDirection().y;
+        double y1 = local_ray.GetOrigin().y() + t1 * local_ray.GetDirection().y();
         if (_minimum < y1 && y1 < _maximum)
         {
             xs.push_back(Intersection(t1, std::make_shared<Cones>(*this)));
@@ -51,31 +51,31 @@ TJRayTracer::Cones::local_intersect(const Ray &local_ray) {
     return xs;
 }
 
-TJRayTracer::Vector
-TJRayTracer::Cones::local_normal_at(const TJRayTracer::Point &local_point) {
-    double dist = local_point.x * local_point.x + local_point.z * local_point.z;
-    if (dist < 1 && local_point.y >= (_maximum - EPSILON))
+TJRayTracer::Vector4d
+TJRayTracer::Cones::local_normal_at(const TJRayTracer::Vector4d &local_point) {
+    double dist = local_point.x() * local_point.x() + local_point.z() * local_point.z();
+    if (dist < 1 && local_point.y() >= (_maximum - EPSILON))
     {
-        return Vector(0, 1, 0);
+        return Vector4d(0, 1, 0, 0);
     }
-    else if (dist < 1 && local_point.y <= (_minimum + EPSILON))
+    else if (dist < 1 && local_point.y() <= (_minimum + EPSILON))
     {
-        return Vector(0, -1, 0);
+        return Vector4d(0, -1, 0, 0);
     }
     else 
     {
-        double y = sqrt(local_point.y * local_point.y + local_point.z * local_point.z);
-        if (local_point.y > 0)
+        double y = sqrt(local_point.y() * local_point.y() + local_point.z() * local_point.z());
+        if (local_point.y() > 0)
         {
             y = -y;
         }
-        return Vector(local_point.x, y , local_point.z);
+        return Vector4d(local_point.x(), y , local_point.z(), 0);
     }
 }
 
 std::shared_ptr<TJRayTracer::Cones> TJRayTracer::Cones::Glass_cones() {
   auto cones = std::make_shared<Cones>();
-  cones->SetTransform(TF::identity());
+  cones->SetTransform(TF::Identity());
   cones->material->transparency = 1.0;
   cones->material->refractive_index = 1.5;
   return cones;

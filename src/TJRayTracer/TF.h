@@ -4,30 +4,30 @@
 
 #ifndef TJRAYTRACER_TF_H
 #define TJRAYTRACER_TF_H
-#include "MatrixXd.h"
 #include <cmath>
+#include "Utility.h"
 namespace TJRayTracer {
 class TF {
 public:
   TF();
-  static MatrixXd<double, 4, 4> identity();
-  static MatrixXd<double, 4, 4> translation(double x, double y, double z);
-  static MatrixXd<double, 4, 4> scaling(double x, double y, double z);
-  static MatrixXd<double, 4, 4> rotation_x(double angle);
-  static MatrixXd<double, 4, 4> rotation_y(double angle);
-  static MatrixXd<double, 4, 4> rotation_z(double angle);
-  static MatrixXd<double, 4, 4> shearing(double x_y, double x_z, double y_x,
+  static Matrix4d Identity();
+  static Matrix4d translation(double x, double y, double z);
+  static Matrix4d scaling(double x, double y, double z);
+  static Matrix4d rotation_x(double angle);
+  static Matrix4d rotation_y(double angle);
+  static Matrix4d rotation_z(double angle);
+  static Matrix4d shearing(double x_y, double x_z, double y_x,
                                          double y_z, double z_x, double z_y);
-  [[nodiscard]] MatrixXd<double, 4, 4> GetTransform() const;
-  void operator=(const MatrixXd<double, 4, 4> &other);
+  [[nodiscard]] Matrix4d GetTransform() const;
+  void operator=(const Matrix4d &other);
   ~TF() = default;
 
 public:
-  static MatrixXd<double, 4, 4>
-  view_transform(const Point &from, const Point &to, const Vector &up);
+  static Matrix4d
+  view_transform(const Vector4d &from, const Vector4d &to, const Vector4d &up);
 
 private:
-  MatrixXd<double, 4, 4> _transform;
+  Matrix4d _transform;
 };
 } // namespace TJRayTracer
 

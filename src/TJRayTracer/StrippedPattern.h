@@ -5,7 +5,6 @@
 #ifndef TJRAYTRACER_STRIPPEDPATTERN_H
 #define TJRAYTRACER_STRIPPEDPATTERN_H
 #include "BasePattern.h"
-#include "Point.h"
 namespace TJRayTracer {
 class StrippedPattern : public BasePattern {
 public:

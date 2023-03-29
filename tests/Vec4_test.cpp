@@ -172,7 +172,7 @@ TEST(SecondChapter, CreatePNGFile) {
 }
 
 TEST(ThirdChapter, CreateMatrix) {
-  TJRayTracer::MatrixXd<double, 4, 4> M;
+  TJRayTracer::Matrix4d M;
   M(0, 0) = 1;
   M(0, 1) = 2;
   M(0, 2) = 3;
@@ -230,7 +230,7 @@ TEST(ThirdChapter, CreateMatrix3by3) {
 }
 
 TEST(ThirdChapter, EqualityOfMatrices) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 1;
   A(0, 1) = 2;
   A(0, 2) = 3;
@@ -248,7 +248,7 @@ TEST(ThirdChapter, EqualityOfMatrices) {
   A(3, 2) = 3;
   A(3, 3) = 2;
 
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 1;
   B(0, 1) = 2;
   B(0, 2) = 3;
@@ -270,7 +270,7 @@ TEST(ThirdChapter, EqualityOfMatrices) {
 }
 
 TEST(ThirdChapter, InequalityOfMatrices) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 1;
   A(0, 1) = 2;
   A(0, 2) = 3;
@@ -288,7 +288,7 @@ TEST(ThirdChapter, InequalityOfMatrices) {
   A(3, 2) = 3;
   A(3, 3) = 2;
 
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 2;
   B(0, 1) = 3;
   B(0, 2) = 4;
@@ -310,7 +310,7 @@ TEST(ThirdChapter, InequalityOfMatrices) {
 }
 
 TEST(ThirdChapter, MatrixMultiplication) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 1;
   A(0, 1) = 2;
   A(0, 2) = 3;
@@ -328,7 +328,7 @@ TEST(ThirdChapter, MatrixMultiplication) {
   A(3, 2) = 3;
   A(3, 3) = 2;
 
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = -2;
   B(0, 1) = 1;
   B(0, 2) = 2;
@@ -346,7 +346,7 @@ TEST(ThirdChapter, MatrixMultiplication) {
   B(3, 2) = 7;
   B(3, 3) = 8;
 
-  TJRayTracer::MatrixXd<double, 4, 4> C;
+  TJRayTracer::Matrix4d C;
   C(0, 0) = 20;
   C(0, 1) = 22;
   C(0, 2) = 50;
@@ -368,7 +368,7 @@ TEST(ThirdChapter, MatrixMultiplication) {
 }
 
 TEST(ThirdChapter, MatrixMultipliedByPoint) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 1;
   A(0, 1) = 2;
   A(0, 2) = 3;
@@ -390,8 +390,8 @@ TEST(ThirdChapter, MatrixMultipliedByPoint) {
 }
 
 TEST(ThirdChapter, IdentityMatrix) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
-  A.identity();
+  TJRayTracer::Matrix4d A;
+  A.Identity();
   ASSERT_EQ(equal(A(0, 0), 1), true);
   ASSERT_EQ(equal(A(0, 1), 0), true);
   ASSERT_EQ(equal(A(0, 2), 0), true);
@@ -411,7 +411,7 @@ TEST(ThirdChapter, IdentityMatrix) {
 }
 
 TEST(ThirdChapter, TransposeMatrix) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 0;
   A(0, 1) = 9;
   A(0, 2) = 3;
@@ -428,7 +428,7 @@ TEST(ThirdChapter, TransposeMatrix) {
   A(3, 1) = 0;
   A(3, 2) = 5;
   A(3, 3) = 8;
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 0;
   B(0, 1) = 9;
   B(0, 2) = 1;
@@ -450,9 +450,9 @@ TEST(ThirdChapter, TransposeMatrix) {
 }
 
 TEST(ThirdChapter, TransposeOfIndentityMatrix) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
-  A.identity();
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d A;
+  A.Identity();
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 1;
   B(0, 1) = 0;
   B(0, 2) = 0;
@@ -505,7 +505,7 @@ TEST(ThirdChapter, Submatrix) {
 }
 
 TEST(ThirdChapter, Submatrix2) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   TJRayTracer::MatrixXd<double, 3, 3> B;
   A(0, 0) = -6;
   A(0, 1) = 1;
@@ -586,7 +586,7 @@ TEST(ThirdChapter, 3by3Determinant) {
 }
 
 TEST(ThirdChapter, 4by4Determinant) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = -2;
   A(0, 1) = -8;
   A(0, 2) = 3;
@@ -611,7 +611,7 @@ TEST(ThirdChapter, 4by4Determinant) {
 }
 
 TEST(ThirdChapter, Invertible) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = -5;
   A(0, 1) = 2;
   A(0, 2) = 6;
@@ -628,7 +628,7 @@ TEST(ThirdChapter, Invertible) {
   A(3, 1) = -3;
   A(3, 2) = 7;
   A(3, 3) = 4;
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 0.21805;
   B(0, 1) = 0.45113;
   B(0, 2) = 0.24060;
@@ -649,7 +649,7 @@ TEST(ThirdChapter, Invertible) {
 }
 
 TEST(ThirdChapter, MultiplyingAProductByItsInverse) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
+  TJRayTracer::Matrix4d A;
   A(0, 0) = 3;
   A(0, 1) = -9;
   A(0, 2) = 7;
@@ -666,7 +666,7 @@ TEST(ThirdChapter, MultiplyingAProductByItsInverse) {
   A(3, 1) = 5;
   A(3, 2) = -1;
   A(3, 3) = 1;
-  TJRayTracer::MatrixXd<double, 4, 4> B;
+  TJRayTracer::Matrix4d B;
   B(0, 0) = 8;
   B(0, 1) = 2;
   B(0, 2) = 2;
@@ -683,13 +683,13 @@ TEST(ThirdChapter, MultiplyingAProductByItsInverse) {
   B(3, 1) = -2;
   B(3, 2) = 0;
   B(3, 3) = 5;
-  TJRayTracer::MatrixXd<double, 4, 4> C = A * B;
+  TJRayTracer::Matrix4d C = A * B;
   ASSERT_EQ((C * B.inverse()) == A, true);
 }
 
 TEST(FourthChapter, IdentityTransform) {
-  TJRayTracer::MatrixXd<double, 4, 4> A;
-  A.identity();
+  TJRayTracer::Matrix4d A;
+  A.Identity();
   TJRayTracer::TF tf;
   ASSERT_EQ(A == tf.GetTransform(), true);
 }
@@ -967,9 +967,9 @@ TEST(FifthChapter, ScalingARay) {
 TEST(FifthChapter, SphereDefaultTransformation) {
   using namespace TJRayTracer;
   Sphere s;
-  auto identity = TJRayTracer::MatrixXd<double, 4, 4>();
-  identity.identity();
-  ASSERT_EQ(s.GetTransform() == identity, true);
+  auto Identity = TJRayTracer::Matrix4d();
+  Identity.Identity();
+  ASSERT_EQ(s.GetTransform() == Identity, true);
 }
 
 TEST(FifthChapter, ChangingASpehereTransformation) {
@@ -1309,7 +1309,7 @@ TEST(SeventhChapter, TheTransformationMatrixForTheDefaultOrientation) {
   auto to = Point(0, 0, -1);
   auto up = Vector(0, 1, 0);
   auto t = TF::view_transform(from, to, up);
-  ASSERT_EQ((t == TF::identity()), true);
+  ASSERT_EQ((t == TF::Identity()), true);
 }
 
 TEST(SeventhChapter, AViewTransformationMatrixLookingInPositiveZDirection) {
@@ -1327,7 +1327,7 @@ TEST(SeventhChapter, AnArbitraryViewTransformation) {
   auto to = Point(4, -2, 8);
   auto up = Vector(1, 1, 0);
   auto t = TF::view_transform(from, to, up);
-  auto matrix = MatrixXd<double, 4, 4>();
+  auto matrix = Matrix4d();
   matrix(0, 0) = -0.50709;
   matrix(0, 1) = 0.50709;
   matrix(0, 2) = 0.67612;
@@ -1353,7 +1353,7 @@ TEST(SeventhChapter, ConstructingACamera) {
   ASSERT_EQ(c.hsize, 160);
   ASSERT_EQ(c.vsize, 120);
   ASSERT_EQ(equal(c.fov, M_PI_2), true);
-  ASSERT_EQ(c.tf == TF::identity(), true);
+  ASSERT_EQ(c.tf == TF::Identity(), true);
 }
 
 TEST(SeventhChapter, ThePixelSizeForAHorizontalCanvas) {
@@ -1480,7 +1480,7 @@ TEST(EightChapter, TheHitShouldOffsetThePoint) {
 TEST(Ninth, TheDefaultTransformation) {
   using namespace TJRayTracer;
   std::unique_ptr<BaseObject> s = std::make_unique<Sphere>();
-  ASSERT_EQ(s->GetTransform() == TF::identity(), true);
+  ASSERT_EQ(s->GetTransform() == TF::Identity(), true);
 }
 
 TEST(Ninth, SetTransformation) {
@@ -1658,7 +1658,7 @@ TEST(Tenth, StripesWithBothAnObjectAndAPatternTransformation) {
 TEST(Tenth, TheDefaultPatternTransformation) {
   using namespace TJRayTracer;
   std::shared_ptr<BasePattern> pattern = std::make_shared<StrippedPattern>();
-  ASSERT_EQ(pattern->GetTransform() == TF::identity(), true);
+  ASSERT_EQ(pattern->GetTransform() == TF::Identity(), true);
 }
 
 TEST(Tenth, AssigningATransformation) {
@@ -1818,7 +1818,7 @@ TEST(Eleventh, TransparencyAndRefractiveIndexForTheDefaultMaterial) {
 TEST(Eleventh, AHelperForProducingASphereWithAGlassyMaterial) {
   using namespace TJRayTracer;
   std::shared_ptr<BaseObject> s = Sphere::Glass_sphere();
-  ASSERT_EQ(s->GetTransform() == TF::identity(), true);
+  ASSERT_EQ(s->GetTransform() == TF::Identity(), true);
   ASSERT_EQ(equal(s->material->transparency, 1.0), true);
   ASSERT_EQ(equal(s->material->refractive_index, 1.5), true);
 }

@@ -6,7 +6,6 @@
 #define TJRAYTRACER_CHECKERSPATTERN_H
 
 #include "BasePattern.h"
-#include "Point.h"
 namespace TJRayTracer {
 class CheckersPattern : public BasePattern {
 public:

@@ -6,7 +6,6 @@
 #define TJRAYTRACER_RINGPATTERN_H
 
 #include "BasePattern.h"
-#include "Point.h"
 namespace TJRayTracer {
 class RingPattern : public BasePattern {
 public:

@@ -5,7 +5,7 @@
 #include "Sphere.h"
 TJRayTracer::Sphere::Sphere() : BaseObject() {}
 TJRayTracer::Sphere::Sphere(
-    const TJRayTracer::MatrixXd<double, 4, 4> &transform)
+    const TJRayTracer::Matrix4d &transform)
     : BaseObject(transform) {}
 TJRayTracer::Sphere::~Sphere() noexcept {}
 
@@ -37,7 +37,7 @@ TJRayTracer::Sphere::local_normal_at(const TJRayTracer::Point &local_point) {
 
 std::shared_ptr<TJRayTracer::Sphere> TJRayTracer::Sphere::Glass_sphere() {
   auto sphere = std::make_shared<Sphere>();
-  sphere->SetTransform(TF::identity());
+  sphere->SetTransform(TF::Identity());
   sphere->material->transparency = 1.0;
   sphere->material->refractive_index = 1.5;
   return sphere;

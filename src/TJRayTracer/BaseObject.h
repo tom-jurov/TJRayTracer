@@ -6,36 +6,36 @@
 #define TJRAYTRACER_BASEOBJECT_H
 #include "Intersection.h"
 #include "Material.h"
-#include "MatrixXd.h"
 #include "Ray.h"
 #include "TF.h"
 #include "memory"
 #include <vector>
+#include "Utility.h"
 namespace TJRayTracer {
 class Material;
 class Intersection;
 class BaseObject {
 public:
   BaseObject();
-  BaseObject(const TJRayTracer::MatrixXd<double, 4, 4> &transform);
+  BaseObject(const TJRayTracer::Matrix4d &transform);
   virtual ~BaseObject();
-  void SetTransform(const TJRayTracer::MatrixXd<double, 4, 4> &transform);
-  TJRayTracer::MatrixXd<double, 4, 4> GetTransform() const;
+  void SetTransform(const TJRayTracer::Matrix4d &transform);
+  TJRayTracer::Matrix4d GetTransform() const;
   [[nodiscard]] virtual std::vector<Intersection>
   local_intersect(const Ray &local_ray) = 0;
   [[nodiscard]] std::vector<Intersection> intersect(const Ray &ray);
   [[nodiscard]] static Intersection
   hit(const std::vector<Intersection> &intersections);
-  [[nodiscard]] virtual Vector
-  local_normal_at(const TJRayTracer::Point &local_point) = 0;
-  [[nodiscard]] Vector normal_at(const TJRayTracer::Point &point);
+  [[nodiscard]] virtual Vector4d
+  local_normal_at(const TJRayTracer::Vector4d &local_point) = 0;
+  [[nodiscard]] Vector4d normal_at(const TJRayTracer::Vector4d &point);
 
 public:
   friend bool operator==(const TJRayTracer::BaseObject &lhs,
                          const TJRayTracer::BaseObject &rhs);
 
 private:
-  TJRayTracer::MatrixXd<double, 4, 4> _transform;
+  TJRayTracer::Matrix4d _transform;
 
 public:
   std::shared_ptr<Material> material = nullptr;
