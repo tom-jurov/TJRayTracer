@@ -14,7 +14,7 @@ public:
   ~TestPattern() = default;
 
 public:
-  Color pattern_at(const Point &point);
+  Color pattern_at(const Vector4d &point);
 };
 } // namespace TJRayTracer
 

@@ -3,7 +3,7 @@
 //
 
 #include "TF.h"
-TJRayTracer::TF::TF() { _transform.Identity(); }
+TJRayTracer::TF::TF() : _transform(Eigen::Matrix4d::Identity()){}
 
 TJRayTracer::Matrix4d TJRayTracer::TF::GetTransform() const {
   return _transform;
@@ -16,8 +16,7 @@ void TJRayTracer::TF::operator=(
 
 TJRayTracer::Matrix4d
 TJRayTracer::TF::translation(double x, double y, double z) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(0, 3) = x;
   result(1, 3) = y;
   result(2, 3) = z;
@@ -26,8 +25,7 @@ TJRayTracer::TF::translation(double x, double y, double z) {
 
 TJRayTracer::Matrix4d TJRayTracer::TF::scaling(double x, double y,
                                                              double z) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(0, 0) = x;
   result(1, 1) = y;
   result(2, 2) = z;
@@ -35,8 +33,7 @@ TJRayTracer::Matrix4d TJRayTracer::TF::scaling(double x, double y,
 }
 
 TJRayTracer::Matrix4d TJRayTracer::TF::rotation_x(double angle) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(1, 1) = cos(angle);
   result(1, 2) = -sin(angle);
   result(2, 1) = sin(angle);
@@ -45,8 +42,7 @@ TJRayTracer::Matrix4d TJRayTracer::TF::rotation_x(double angle) {
 }
 
 TJRayTracer::Matrix4d TJRayTracer::TF::rotation_y(double angle) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(0, 0) = cos(angle);
   result(0, 2) = sin(angle);
   result(2, 0) = -sin(angle);
@@ -55,8 +51,7 @@ TJRayTracer::Matrix4d TJRayTracer::TF::rotation_y(double angle) {
 }
 
 TJRayTracer::Matrix4d TJRayTracer::TF::rotation_z(double angle) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(0, 0) = cos(angle);
   result(0, 1) = -sin(angle);
   result(1, 0) = sin(angle);
@@ -67,8 +62,7 @@ TJRayTracer::Matrix4d TJRayTracer::TF::rotation_z(double angle) {
 TJRayTracer::Matrix4d
 TJRayTracer::TF::shearing(double x_y, double x_z, double y_x, double y_z,
                           double z_x, double z_y) {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   result(0, 1) = x_y;
   result(0, 2) = x_z;
   result(1, 0) = y_x;
@@ -79,8 +73,7 @@ TJRayTracer::TF::shearing(double x_y, double x_z, double y_x, double y_z,
 }
 
 TJRayTracer::Matrix4d TJRayTracer::TF::Identity() {
-  TJRayTracer::Matrix4d result;
-  result.Identity();
+  TJRayTracer::Matrix4d result = Eigen::Matrix4d::Identity();
   return result;
 }
 

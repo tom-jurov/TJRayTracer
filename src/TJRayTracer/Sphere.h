@@ -14,7 +14,7 @@ public:
   Sphere(const Matrix4d &transform);
   ~Sphere();
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
-  [[nodiscard]] Vector local_normal_at(const Point &local_point);
+  [[nodiscard]] Vector4d local_normal_at(const Vector4d &local_point);
   static std::shared_ptr<Sphere> Glass_sphere();
 };
 } // namespace TJRayTracer

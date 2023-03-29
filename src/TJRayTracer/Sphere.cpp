@@ -11,12 +11,12 @@ TJRayTracer::Sphere::~Sphere() noexcept {}
 
 std::vector<TJRayTracer::Intersection>
 TJRayTracer::Sphere::local_intersect(const Ray &local_ray) {
-  auto sphereOrigin = Point(0, 0, 0);
+  auto sphereOrigin = Vector4d(0, 0, 0, 1);
   std::vector<Intersection> intersections;
-  Vector sphere_to_ray = local_ray.GetOrigin() - sphereOrigin;
-  double a = Vector::dot(local_ray.GetDirection(), local_ray.GetDirection());
-  double b = 2 * Vector::dot(local_ray.GetDirection(), sphere_to_ray);
-  double c = Vector::dot(sphere_to_ray, sphere_to_ray) - 1;
+  Vector4d sphere_to_ray = local_ray.GetOrigin() - sphereOrigin;
+  double a = local_ray.GetDirection().dot(local_ray.GetDirection());
+  double b = 2 * local_ray.GetDirection().dot(sphere_to_ray);
+  double c = sphere_to_ray.dot(sphere_to_ray) - 1;
 
   double discriminant = b * b - 4 * a * c;
   if (discriminant < 0) {
@@ -29,9 +29,9 @@ TJRayTracer::Sphere::local_intersect(const Ray &local_ray) {
   return intersections;
 }
 
-TJRayTracer::Vector
-TJRayTracer::Sphere::local_normal_at(const TJRayTracer::Point &local_point) {
-  Vector local_normal = local_point - Point(0, 0, 0);
+TJRayTracer::Vector4d
+TJRayTracer::Sphere::local_normal_at(const TJRayTracer::Vector4d &local_point) {
+  Vector4d local_normal = local_point - Vector4d(0, 0, 0, 1);
   return local_normal;
 }
 

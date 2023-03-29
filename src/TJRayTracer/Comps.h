@@ -10,13 +10,13 @@ class Comps {
 public:
   double t;
   std::shared_ptr<BaseObject> object;
-  Point point;
-  Point over_point;
-  Point under_point;
-  Vector eyev;
-  Vector normalv;
+  Vector4d point;
+  Vector4d over_point;
+  Vector4d under_point;
+  Vector4d eyev;
+  Vector4d normalv;
   bool inside;
-  Vector reflectv;
+  Vector4d reflectv;
   double n1;
   double n2;
 

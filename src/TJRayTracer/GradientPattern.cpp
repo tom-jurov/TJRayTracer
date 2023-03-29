@@ -8,9 +8,9 @@ TJRayTracer::GradientPattern::GradientPattern(const Color &first_color,
     : BasePattern(first_color, second_color) {}
 
 TJRayTracer::Color
-TJRayTracer::GradientPattern::pattern_at(const Point &point) {
+TJRayTracer::GradientPattern::pattern_at(const Vector4d &point) {
   Color distance = this->b - this->a;
-  double fraction = point.x - floor(point.x);
+  double fraction = point.x() - floor(point.x());
 
   return this->a + distance * fraction;
 }

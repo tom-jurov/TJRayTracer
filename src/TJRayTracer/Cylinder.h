@@ -10,7 +10,7 @@ public:
   Cylinder(const Matrix4d &transform);
   ~Cylinder();
   [[nodiscard]] std::vector<Intersection> local_intersect(const Ray &local_ray);
-  [[nodiscard]] Vector local_normal_at(const Point &local_point);
+  [[nodiscard]] Vector4d local_normal_at(const Vector4d &local_point);
   static std::shared_ptr<Cylinder> Glass_cylinder();
   void SetMaximum(double maximum);
   void SetMinimum(double minimum);

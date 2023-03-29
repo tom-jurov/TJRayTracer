@@ -12,11 +12,11 @@ namespace TJRayTracer {
 class PointLight {
 public:
   PointLight() = default;
-  PointLight(const Point &position, const Color &intensity);
+  PointLight(const Vector4d &position, const Color &intensity);
   const Color &GetIntensity() const;
-  const Point &GetPosition() const;
+  const Vector4d &GetPosition() const;
   void SetIntensity(const Color &intensity);
-  void SetPosition(const Point &position);
+  void SetPosition(const Vector4d &position);
   ~PointLight() = default;
   PointLight(PointLight &&) = default;
   PointLight &operator=(PointLight &&) = default;
@@ -26,14 +26,14 @@ public:
 public:
   static Color lighting(const std::shared_ptr<Material> &m,
                         const std::shared_ptr<BaseObject> &object,
-                        const PointLight &light, const Point &position,
-                        const Vector &eyev, const Vector &normalv,
+                        const PointLight &light, const Vector4d &position,
+                        const Vector4d &eyev, const Vector4d &normalv,
                         bool in_shadow);
   friend bool operator==(const PointLight &lhs, const PointLight &rhs);
 
 private:
   Color _intensity;
-  Point _position;
+  Vector4d _position;
 };
 } // namespace TJRayTracer
 

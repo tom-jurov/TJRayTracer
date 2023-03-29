@@ -8,8 +8,8 @@ TJRayTracer::StrippedPattern::StrippedPattern(const Color &first_color,
     : BasePattern(first_color, second_color) {}
 
 TJRayTracer::Color
-TJRayTracer::StrippedPattern::pattern_at(const Point &point) {
-  if (static_cast<int>(floor(point.x)) % 2 == 0) {
+TJRayTracer::StrippedPattern::pattern_at(const Vector4d &point) {
+  if (static_cast<int>(floor(point.x())) % 2 == 0) {
     return a;
   }
   return b;

@@ -7,14 +7,10 @@
 #include "TJRayTracer/CheckersPattern.h"
 #include "TJRayTracer/GradientPattern.h"
 #include "TJRayTracer/Material.h"
-#include "TJRayTracer/MatrixXd.h"
 #include "TJRayTracer/Plane.h"
-#include "TJRayTracer/Point.h"
 #include "TJRayTracer/PointLight.h"
 #include "TJRayTracer/Sphere.h"
 #include "TJRayTracer/TF.h"
-#include "TJRayTracer/Vec4.h"
-#include "TJRayTracer/Vector.h"
 #include "TJRayTracer/World.h"
 #include "TJRayTracer/Cube.h"
 #include "TJRayTracer/Cones.h"
@@ -111,11 +107,11 @@ int main() {
   world.objects.push_back(left);
   world.objects.push_back(top_wall);
   world.light_sources.push_back(TJRayTracer::PointLight(
-      TJRayTracer::Point(-10, 1.6, -10), TJRayTracer::Color(1, 1, 1)));
+      TJRayTracer::Vector4d(-10, 1.6, -10, 1), TJRayTracer::Color(1, 1, 1)));
   TJRayTracer::Camera camera(1280, 720, M_PI / 3);
-  camera.tf = TJRayTracer::TF::view_transform(TJRayTracer::Point(0, 0.5, -5),
-                                              TJRayTracer::Point(0, 1, 0),
-                                              TJRayTracer::Vector(0, 1, 0));
+  camera.tf = TJRayTracer::TF::view_transform(TJRayTracer::Vector4d(0, 0.5, -5, 1),
+                                              TJRayTracer::Vector4d(0, 1, 0, 1),
+                                              TJRayTracer::Vector4d(0, 1, 0, 0));
   TJRayTracer::Canvas canvas = camera.render(world);
   canvas.RenderPng("test");
   return 0;

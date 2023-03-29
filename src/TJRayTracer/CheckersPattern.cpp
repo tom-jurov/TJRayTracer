@@ -8,8 +8,8 @@ TJRayTracer::CheckersPattern::CheckersPattern(const Color &first_color,
     : BasePattern(first_color, second_color) {}
 
 TJRayTracer::Color
-TJRayTracer::CheckersPattern::pattern_at(const Point &point) {
-  if (static_cast<int>(floor(point.x) + floor(point.y) + floor(point.z)) % 2 ==
+TJRayTracer::CheckersPattern::pattern_at(const Vector4d &point) {
+  if (static_cast<int>(floor(point.x()) + floor(point.y()) + floor(point.z())) % 2 ==
       0) {
     return this->a;
   }

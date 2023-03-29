@@ -8,9 +8,9 @@ TJRayTracer::Cube::~Cube() noexcept {}
 
 std::vector<TJRayTracer::Intersection>
 TJRayTracer::Cube::local_intersect(const Ray &local_ray) {
-    auto xt = this->check_axis(local_ray.GetOrigin().x, local_ray.GetDirection().x);
-    auto yt = this->check_axis(local_ray.GetOrigin().y, local_ray.GetDirection().y);
-    auto zt = this->check_axis(local_ray.GetOrigin().z, local_ray.GetDirection().z);
+    auto xt = this->check_axis(local_ray.GetOrigin().x(), local_ray.GetDirection().x());
+    auto yt = this->check_axis(local_ray.GetOrigin().y(), local_ray.GetDirection().y());
+    auto zt = this->check_axis(local_ray.GetOrigin().z(), local_ray.GetDirection().z());
     
     double tmin = std::max({xt[0], yt[0], zt[0]});
     double tmax = std::min({xt[1], yt[1], zt[1]});
@@ -29,14 +29,14 @@ TJRayTracer::Cube::local_normal_at(const TJRayTracer::Vector4d &local_point) {
 
     if (equal(maxc, fabs(local_point.x())))
     {
-        return Vector(local_point.x(), 0, 0, 0);
+        return Vector4d(local_point.x(), 0, 0, 0);
     }
-    else if (equal(maxc, fabs(local_point.y)))
+    else if (equal(maxc, fabs(local_point.y())))
     {
-        return Vector(0, local_point.y(), 0, 0);
+        return Vector4d(0, local_point.y(), 0, 0);
     }
 
-    return Vector(0, 0, local_point.z(), 0);
+    return Vector4d(0, 0, local_point.z(), 0);
 }
 
 std::vector<double> TJRayTracer::Cube::check_axis(double origin, double direction)

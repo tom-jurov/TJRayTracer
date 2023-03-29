@@ -44,7 +44,7 @@ TJRayTracer::Vector4d
 TJRayTracer::BaseObject::normal_at(const TJRayTracer::Vector4d &point) {
   Vector4d local_point = (_transform.inverse()) * point;
   Vector4d local_normal = std::move(this->local_normal_at(local_point));
-  Vector4d world_transform = this->GetTransform().inverse();
+  Matrix4d world_transform = this->GetTransform().inverse();
   world_transform.transposeInPlace();
   Vector4d world_normal = world_transform * local_normal;
   world_normal(3) = 0;

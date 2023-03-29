@@ -6,7 +6,7 @@
 #include "Sphere.h"
 #include <algorithm>
 void TJRayTracer::World::default_world() {
-  TJRayTracer::PointLight light(Point(-10, 10, -10), Color(1, 1, 1));
+  TJRayTracer::PointLight light(Vector4d(-10, 10, -10, 1), Color(1, 1, 1));
   std::unique_ptr<BaseObject> s1 = std::make_unique<TJRayTracer::Sphere>();
   s1->material = std::make_shared<Material>(Color(0.8, 1.0, 0.6), 0.1, 0.7, 0.2,
                                             200, nullptr, 0.0, 0.0, 1.0);
@@ -76,8 +76,8 @@ TJRayTracer::Color TJRayTracer::World::color_at(const TJRayTracer::Ray &ray,
 
 bool TJRayTracer::World::is_shadowed(const Vector4d &point) {
   auto v = this->light_sources[0].GetPosition() - point;
-  double distance = Vector::magnitude(v);
-  Vector direction = v.normalize();
+  double distance = v.norm();
+  Vector4d direction = v.normalized();
   Ray ray(point, direction);
   auto intersections = this->intersect_world(ray);
   auto h = BaseObject::hit(intersections);
@@ -105,13 +105,13 @@ TJRayTracer::World::refracted_color(const TJRayTracer::Comps &comps,
     return Color(0, 0, 0);
   }
   double n_ratio = comps.n1 / comps.n2;
-  double cos_i = Vector::dot(comps.eyev, comps.normalv);
+  double cos_i = comps.eyev.dot(comps.normalv);
   double sin2_t = n_ratio * n_ratio * (1 - cos_i * cos_i);
   if (sin2_t > 1) {
     return Color(0, 0, 0);
   }
   double cos_t = sqrt(1.0 - sin2_t);
-  Vector direction =
+  Vector4d direction =
       comps.normalv * (n_ratio * cos_i - cos_t) - comps.eyev * n_ratio;
   Ray refract_ray(comps.under_point, direction);
   return this->color_at(refract_ray, remaining - 1) *

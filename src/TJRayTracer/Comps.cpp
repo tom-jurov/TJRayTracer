@@ -18,7 +18,7 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
   result.eyev = ray.GetDirection();
   result.eyev = -result.eyev;
   result.normalv = result.object->normal_at(result.point);
-  if (Vector::dot(result.normalv, result.eyev) < 0) {
+  if (result.normalv.dot(result.eyev) < 0) {
     result.inside = true;
     result.normalv = -result.normalv;
   } else {
@@ -26,7 +26,7 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
   }
   result.over_point = result.point + result.normalv * EPSILON;
   result.under_point = result.point - result.normalv * EPSILON;
-  result.reflectv = Vector::reflect(ray.GetDirection(), result.normalv);
+  result.reflectv = reflect(ray.GetDirection(), result.normalv);
 
   std::vector<std::shared_ptr<BaseObject>> containers;
   for (auto &inter : intersections) {
@@ -61,7 +61,7 @@ TJRayTracer::Comps TJRayTracer::Comps::prepare_computations(
 }
 
 double TJRayTracer::Comps::schlick(const Comps &comps) {
-  double cos = Vector::dot(comps.eyev, comps.normalv);
+  double cos = comps.eyev.dot(comps.normalv);
 
   if (comps.n1 > comps.n2) {
     double n = comps.n1 / comps.n2;

@@ -26,9 +26,9 @@ TJRayTracer::Ray TJRayTracer::Camera::ray_for_pixel(int px, int py) {
   double world_x = half_width - xoffset;
   double world_y = half_height - yoffset;
 
-  TJRayTracer::Point pixel = tf.inverse() * Point(world_x, world_y, -1);
-  TJRayTracer::Point origin = tf.inverse() * Point(0, 0, 0);
-  TJRayTracer::Vector direction = (pixel - origin).normalize();
+  TJRayTracer::Vector4d pixel = tf.inverse() * Vector4d(world_x, world_y, -1, 1);
+  TJRayTracer::Vector4d origin = tf.inverse() * Vector4d(0, 0, 0, 1);
+  TJRayTracer::Vector4d direction = (pixel - origin).normalized();
   return TJRayTracer::Ray(origin, direction);
 }
 

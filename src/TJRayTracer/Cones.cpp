@@ -113,8 +113,8 @@ void TJRayTracer::Cones::SetClosed(bool closed)
 
 bool TJRayTracer::Cones::check_cap(const Ray &ray, double t)
 {
-    double x = ray.GetOrigin().x + t * ray.GetDirection().x;
-    double z = ray.GetOrigin().z + t * ray.GetDirection().z;
+    double x = ray.GetOrigin().x() + t * ray.GetDirection().x();
+    double z = ray.GetOrigin().z() + t * ray.GetDirection().z();
 
     if (x * x + z * z <= fabs(_minimum) || x * x + z * z <= fabs(_maximum))
     {
@@ -125,16 +125,16 @@ bool TJRayTracer::Cones::check_cap(const Ray &ray, double t)
 
 void TJRayTracer::Cones::intersect_caps(const Ray &ray, std::vector<Intersection> &xs)
 {
-    if ((!_closed) || equal(ray.GetDirection().y, 0))
+    if ((!_closed) || equal(ray.GetDirection().y(), 0))
         return;
 
-    double t = (_minimum - ray.GetOrigin().y) / ray.GetDirection().y;
+    double t = (_minimum - ray.GetOrigin().y()) / ray.GetDirection().y();
     if (this->check_cap(ray, t))
     {
         xs.push_back(Intersection(t, std::make_shared<Cones>(*this)));
     }  
 
-    t =  (_maximum - ray.GetOrigin().y) / ray.GetDirection().y;
+    t =  (_maximum - ray.GetOrigin().y()) / ray.GetDirection().y();
     if (this->check_cap(ray, t))
     {
         xs.push_back(Intersection(t, std::make_shared<Cones>(*this)));
