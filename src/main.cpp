@@ -14,6 +14,7 @@
 #include "TJRayTracer/World.h"
 #include "TJRayTracer/Cube.h"
 #include "TJRayTracer/Cones.h"
+#include "TJRayTracer/RingPattern.h"
 #include <iostream>
 #include <vector>
 
@@ -64,16 +65,13 @@ int main() {
   right_wall->material = std::make_shared<TJRayTracer::Material>();
   right_wall->material->pattern = pattern;
 
-  std::shared_ptr<TJRayTracer::BasePattern> gradient =
-      std::make_shared<TJRayTracer::GradientPattern>(
-          TJRayTracer::Color(1, 0, 0),
-          TJRayTracer::Color(1, 253 / (double)255, 15 / double(255)));
-  gradient->SetTransform(TJRayTracer::TF::rotation_y(M_PI / 2.3));
   std::shared_ptr<TJRayTracer::Cones> middle =
       std::make_shared<TJRayTracer::Cones>();
-  middle->SetTransform(TJRayTracer::TF::translation(-0.5, 1, 0.5));
+  middle->SetClosed(true);    
+  middle->SetMaximum(0.5);
+  middle->SetMinimum(0);
+  middle->SetTransform(TJRayTracer::TF::translation(-0.5, 1, 0.5)*TJRayTracer::TF::rotation_z(M_PI));
   middle->material = std::make_shared<TJRayTracer::Material>();
-  middle->material->pattern = gradient;
   middle->material->color = TJRayTracer::Color(0.1, 1, 0.5);
   middle->material->diffuse = 0.7;
   middle->material->specular = 0.3;

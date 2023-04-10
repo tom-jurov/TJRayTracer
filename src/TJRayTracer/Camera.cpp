@@ -4,6 +4,7 @@
 
 #include "Camera.h"
 #include "Timer.h"
+#include <omp.h>
 
 TJRayTracer::Camera::Camera(const int &hsize, const int &vsize,
                             const double &fov)
@@ -35,6 +36,7 @@ TJRayTracer::Ray TJRayTracer::Camera::ray_for_pixel(int px, int py) {
 TJRayTracer::Canvas TJRayTracer::Camera::render(TJRayTracer::World &world) {
   auto canvas = TJRayTracer::Canvas(hsize, vsize);
   TJRayTracer::Timer timer;
+  #pragma omp parallel for schedule(dynamic, 1)
   for (std::size_t y = 0; y < vsize; ++y) {
     for (std::size_t x = 0; x < hsize; ++x) {
       TJRayTracer::Ray ray = this->ray_for_pixel(x, y);
