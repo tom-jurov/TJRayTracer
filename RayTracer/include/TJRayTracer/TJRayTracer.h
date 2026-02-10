@@ -1,0 +1,16 @@
+#pragma once
+
+#include "BaseObject.h"
+#include "Camera.h"
+#include "Canvas.h"
+#include "CheckersPattern.h"
+#include "GradientPattern.h"
+#include "Material.h"
+#include "Plane.h"
+#include "PointLight.h"
+#include "Sphere.h"
+#include "TF.h"
+#include "World.h"
+#include "Cube.h"
+#include "Cones.h"
+#include "RingPattern.h"
